@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Home } from "./pages/Home";
-import { UrlJourney } from "./pages/UrlJourney";
+import { UrlJourney } from "./components/urlJourney/UrlJourney.jsx";
 
 export const App = () => {
   const [page, setPage] = useState("home");
