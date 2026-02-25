@@ -59,6 +59,16 @@ export const UrlJourney = ({ setPage }) => {
             {step.highlight === "dns" && <div className="packet" />}
           </div>
 
+          <div
+            className={`node ${step.highlight === "browser" ? "active" : ""}`}
+          >
+            Browser
+          </div>
+
+          <div className="line">
+            {step.highlight === "dns" && <div className="packet" />}
+          </div>
+
           <div className={`node ${step.highlight === "dns" ? "active" : ""}`}>
             DNS
           </div>
