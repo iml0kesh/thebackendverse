@@ -270,7 +270,7 @@ HTML bytes
   },
 ];
 
-export default function StepExplainer({ stepIndex, parsed }) {
+export const StepExplainer = ({ stepIndex, parsed }) => {
   const detail = STEP_DETAILS(parsed)[stepIndex];
   const step = STEPS[stepIndex];
   if (!detail) return null;

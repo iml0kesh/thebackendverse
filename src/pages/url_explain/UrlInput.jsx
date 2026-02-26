@@ -1,4 +1,4 @@
-export default function UrlInput({ url, setUrl, onStart }) {
+export const UrlInput = ({ url, setUrl, onStart }) => {
   const handleKey = (e) => {
     if (e.key === "Enter") onStart();
   };

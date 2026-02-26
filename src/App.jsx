@@ -1,11 +1,11 @@
 import { useState } from "react";
-import UrlInput from "./components/UrlInput";
-import UrlBreakdown from "./components/UrlBreakdown";
-import JourneyPipeline from "./components/JourneyPipeline";
-import StepExplainer from "./components/StepExplainer";
+import { UrlInput } from "./pages/url_explain/UrlInput";
+import { UrlBreakdown } from "./pages/url_explain/UrlBreakdown";
+import {JourneyPipeline} from "./pages/url_explain/JourneyPipeline";
+import { StepExplainer } from "./pages/url_explain/StepExplainer";
 import "./App.css";
 
-function parseUrl(raw) {
+const parseUrl = (raw) => {
   try {
     const url = new URL(raw.startsWith("http") ? raw : "https://" + raw);
     const hostParts = url.hostname.split(".");
@@ -28,7 +28,7 @@ function parseUrl(raw) {
   }
 }
 
-export default function App() {
+export const  App = () => {
   const [url, setUrl] = useState("");
   const [parsed, setParsed] = useState(null);
   const [started, setStarted] = useState(false);

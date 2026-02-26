@@ -24,7 +24,7 @@ const PHASE_COLORS = {
   Response: "#fd79a8",
 };
 
-export default function JourneyPipeline({ started, activeStep, setActiveStep, parsed }) {
+export const JourneyPipeline = ({ started, activeStep, setActiveStep, parsed }) => {
   const [revealedUpTo, setRevealedUpTo] = useState(-1);
 
   useEffect(() => {

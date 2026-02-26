@@ -23,7 +23,7 @@ const PARTS_INFO = {
   },
 };
 
-export default function UrlBreakdown({ parsed, rawUrl }) {
+export const UrlBreakdown = ({ parsed, rawUrl }) => {
   const [hovered, setHovered] = useState(null);
 
   const parts = [
