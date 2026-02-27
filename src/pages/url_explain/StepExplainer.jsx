@@ -21,7 +21,8 @@ console.log(url.pathname); // "${parsed.path || "/"}"`,
   {
     title: "Cache Check",
     phase: "Phase 1: Client Side",
-    summary: "Before any network request is made, the browser checks multiple layers of cache. A cache hit can serve the entire response in under 1ms — totally bypassing DNS, TCP, TLS, and the server.",
+    summary:
+      "Before any network request is made, the browser checks multiple layers of cache. A cache hit can serve the entire response in under 1ms — totally bypassing DNS, TCP, TLS, and the server.",
     technical: [
       "Memory cache — fastest, stores recently used resources in RAM",
       "Disk cache — persists across browser restarts, based on Cache-Control headers",
@@ -60,7 +61,8 @@ dig +trace ${parsed.domain}
   {
     title: "TCP 3-Way Handshake",
     phase: "Phase 3: Connection Setup",
-    summary: "TCP establishes a reliable, ordered connection before any data is sent. This 3-step handshake takes 1 full round-trip time (RTT) — typically 10–100ms depending on server distance.",
+    summary:
+      "TCP establishes a reliable, ordered connection before any data is sent. This 3-step handshake takes 1 full round-trip time (RTT) — typically 10–100ms depending on server distance.",
     technical: [
       "SYN — Client sends SYN packet with a random sequence number to server:443",
       "SYN-ACK — Server acknowledges, picks its own sequence number, replies SYN-ACK",
@@ -99,7 +101,8 @@ Client ──Finished──► Server
   {
     title: "Internet Transit",
     phase: "Phase 4: Network",
-    summary: "Your request travels as IP packets across the public internet — through ISPs, internet exchange points (IXPs), and undersea cables — before reaching the destination server's data center.",
+    summary:
+      "Your request travels as IP packets across the public internet — through ISPs, internet exchange points (IXPs), and undersea cables — before reaching the destination server's data center.",
     technical: [
       "Data broken into MTU-sized packets (~1500 bytes) at the IP layer",
       "Each router uses BGP (Border Gateway Protocol) to forward packets toward the destination",
@@ -121,7 +124,8 @@ traceroute ${parsed.domain}
   {
     title: "Load Balancer",
     phase: "Phase 5: Server Side",
-    summary: "The request hits a load balancer before any application server. Its job is to distribute traffic across a fleet of servers, ensuring no single machine is overwhelmed and enabling horizontal scaling.",
+    summary:
+      "The request hits a load balancer before any application server. Its job is to distribute traffic across a fleet of servers, ensuring no single machine is overwhelmed and enabling horizontal scaling.",
     technical: [
       "Common load balancers: Nginx, HAProxy, AWS ALB/NLB, Cloudflare",
       "Algorithms: Round Robin, Least Connections, IP Hash, Weighted",
@@ -148,7 +152,8 @@ server {
   {
     title: "Web Server",
     phase: "Phase 5: Server Side",
-    summary: "The web server (Nginx, Apache, Caddy) receives the HTTP request. For static assets (images, JS, CSS), it responds immediately. For dynamic requests, it forwards to the application server.",
+    summary:
+      "The web server (Nginx, Apache, Caddy) receives the HTTP request. For static assets (images, JS, CSS), it responds immediately. For dynamic requests, it forwards to the application server.",
     technical: [
       "Parses incoming HTTP request: method, path, headers, body",
       "Serves static files directly from disk (extremely fast — no app code involved)",
@@ -170,7 +175,8 @@ Cookie: sessionid=abc123; csrftoken=xyz
   {
     title: "Application Server",
     phase: "Phase 5: Server Side",
-    summary: "The app server runs your actual business logic — authentication, data processing, API orchestration. It's written in Node.js, Python, Go, Java, etc. and handles the dynamic part of the request.",
+    summary:
+      "The app server runs your actual business logic — authentication, data processing, API orchestration. It's written in Node.js, Python, Go, Java, etc. and handles the dynamic part of the request.",
     technical: [
       "Framework receives request: Express (Node), Django (Python), Spring (Java), Rails (Ruby)",
       "Middleware pipeline runs: auth, logging, request parsing, CORS",
@@ -195,7 +201,8 @@ app.get("${parsed.path || "/"}", async (req, res) => {
   {
     title: "Database",
     phase: "Phase 5: Server Side",
-    summary: "The app server queries a database to read or write persistent data. This is often the slowest step — optimizing DB queries (indexes, query planning, connection pooling) is critical for performance.",
+    summary:
+      "The app server queries a database to read or write persistent data. This is often the slowest step — optimizing DB queries (indexes, query planning, connection pooling) is critical for performance.",
     technical: [
       "SQL (PostgreSQL, MySQL) or NoSQL (MongoDB, DynamoDB, Cassandra) depending on data model",
       "Query sent over a connection pool (pg-pool, HikariCP) — creating fresh DB connections is expensive",
@@ -220,7 +227,8 @@ LIMIT 1;
   {
     title: "HTTP Response",
     phase: "Phase 6: Response Journey",
-    summary: "The server packages the result into an HTTP response and sends it back through the internet. The response travels the same path in reverse — through the internet, to your ISP, to your device.",
+    summary:
+      "The server packages the result into an HTTP response and sends it back through the internet. The response travels the same path in reverse — through the internet, to your ISP, to your device.",
     technical: [
       "Status code communicates outcome: 200 OK, 301 Redirect, 404 Not Found, 500 Server Error",
       "Response headers set: Content-Type, Cache-Control, ETag, Set-Cookie, CORS headers",
@@ -243,7 +251,8 @@ Set-Cookie: ig_did=ABCD; Domain=.instagram.com; Secure; HttpOnly
   {
     title: "Browser Rendering",
     phase: "Phase 7: Rendering",
-    summary: "The browser receives the HTML and starts constructing the page. It parses HTML → builds the DOM, fetches and applies CSS → builds CSSOM, executes JavaScript, and finally paints pixels to the screen.",
+    summary:
+      "The browser receives the HTML and starts constructing the page. It parses HTML → builds the DOM, fetches and applies CSS → builds CSSOM, executes JavaScript, and finally paints pixels to the screen.",
     technical: [
       "HTML parsing → DOM (Document Object Model) tree built incrementally",
       "CSS parsing → CSSOM (CSS Object Model) built, combined with DOM → Render Tree",
@@ -296,9 +305,11 @@ export const StepExplainer = ({ stepIndex, parsed }) => {
         </div>
         <div className="explainer-code">
           <h3>Code / Commands</h3>
-          <pre><code>{detail.code}</code></pre>
+          <pre>
+            <code>{detail.code}</code>
+          </pre>
         </div>
       </div>
     </section>
   );
-}
+};

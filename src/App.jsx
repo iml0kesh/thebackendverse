@@ -53,11 +53,11 @@ const UrlJourneyPage = ({ onBack }) => {
 
   return (
     <main>
-      <div className="page-back-row">
+      {/* <div className="page-back-row">
         <button className="page-back-btn" onClick={onBack}>
           ← Back to topics
         </button>
-      </div>
+      </div> */}
       <UrlInput url={url} setUrl={setUrl} onStart={handleStart} />
       {parsed && (
         <div className={`results ${animating ? "fade-in" : "visible"}`}>
@@ -115,7 +115,7 @@ export const App = () => {
                 ← All topics
               </button>
             )}
-            <p className="tagline">See what happens when you hit Enter</p>
+            <p className="tagline">From Request to Response.</p>
           </div>
         </div>
       </header>

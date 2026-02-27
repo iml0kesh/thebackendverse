@@ -24,7 +24,7 @@ const PHASE_COLORS = {
   Response: "#fd79a8",
 };
 
-export const JourneyPipeline = ({ started, activeStep, setActiveStep, parsed }) => {
+export const JourneyPipeline = ({ started, activeStep, setActiveStep }) => {
   const [revealedUpTo, setRevealedUpTo] = useState(-1);
 
   useEffect(() => {
@@ -57,22 +57,29 @@ export const JourneyPipeline = ({ started, activeStep, setActiveStep, parsed }) 
     groupedPhases[groupedPhases.length - 1].steps.push({ ...step, index: i });
   });
 
+  const handleNext = () => {
+    if (activeStep < STEPS.length - 1) {
+      setActiveStep(activeStep + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (activeStep > 0) {
+      setActiveStep(activeStep - 1);
+    }
+  };
+
   return (
     <section className="journey-pipeline">
       <h2 className="section-title">
         The Full Journey
-        {started && (
-          <span className="journey-live">● Live</span>
-        )}
+        {started && <span className="journey-live">● Live</span>}
       </h2>
 
       <div className="phase-groups">
         {groupedPhases.map(({ phase, steps }) => (
           <div key={phase} className="phase-group">
-            <div
-              className="phase-label"
-              style={{ color: PHASE_COLORS[phase] }}
-            >
+            <div className="phase-label" style={{ color: PHASE_COLORS[phase] }}>
               {phase}
             </div>
             <div className="phase-steps">
@@ -93,9 +100,10 @@ export const JourneyPipeline = ({ started, activeStep, setActiveStep, parsed }) 
                 >
                   <span className="step-icon">{icon}</span>
                   <span className="step-label">{label}</span>
-                  {index < STEPS.length - 1 && index === Math.max(...steps.map(s => s.index)) && (
-                    <span className="phase-arrow">→</span>
-                  )}
+                  {index < STEPS.length - 1 &&
+                    index === Math.max(...steps.map((s) => s.index)) && (
+                      <span className="phase-arrow">→</span>
+                    )}
                 </button>
               ))}
             </div>
@@ -103,27 +111,33 @@ export const JourneyPipeline = ({ started, activeStep, setActiveStep, parsed }) 
         ))}
       </div>
 
-      <div className="pipeline-linear">
-        {STEPS.map((step, i) => (
-          <span key={step.id}>
-            <button
-              className={`pipeline-dot ${i <= revealedUpTo ? "dot-revealed" : ""} ${activeStep === i ? "dot-active" : ""}`}
-              style={{ "--step-color": PHASE_COLORS[step.phase] }}
-              onClick={() => setActiveStep(activeStep === i ? null : i)}
-              disabled={i > revealedUpTo}
-              title={step.label}
-            />
-            {i < STEPS.length - 1 && (
-              <span className={`pipeline-line ${i < revealedUpTo ? "line-active" : ""}`} />
-            )}
+      {activeStep === null ? (
+        <div className="pipeline-hint">
+          Click any node above for a deep dive into that step
+        </div>
+      ) : (
+        <div className="step-navigation">
+          <button
+            onClick={handlePrev}
+            disabled={activeStep === 0}
+            className="nav-btn prev"
+          >
+            ← Previous
+          </button>
+
+          <span className="step-indicator">
+            Step {activeStep + 1} of {STEPS.length}
           </span>
-        ))}
-      </div>
-      <p className="pipeline-hint">
-        {started
-          ? "Click any node above for a deep dive into that step"
-          : "Initializing journey visualization..."}
-      </p>
+
+          <button
+            onClick={handleNext}
+            disabled={activeStep === STEPS.length - 1}
+            className="nav-btn next"
+          >
+            Next →
+          </button>
+        </div>
+      )}
     </section>
   );
-}
+};

@@ -24,7 +24,7 @@ const PARTS_INFO = {
 };
 
 export const UrlBreakdown = ({ parsed, rawUrl }) => {
-  const [hovered, setHovered] = useState(null);
+  const [hovered, setHovered] = useState("protocol");
 
   const parts = [
     parsed.protocol && { key: "protocol", value: parsed.protocol + "://" },
@@ -43,7 +43,7 @@ export const UrlBreakdown = ({ parsed, rawUrl }) => {
             className={`url-part ${hovered === key ? "hovered" : ""}`}
             style={{ "--part-color": PARTS_INFO[key]?.color }}
             onMouseEnter={() => setHovered(key)}
-            onMouseLeave={() => setHovered(null)}
+            onMouseLeave={() => {}}
           >
             {value}
           </span>
@@ -63,14 +63,21 @@ export const UrlBreakdown = ({ parsed, rawUrl }) => {
           <p>{PARTS_INFO[hovered].desc}</p>
         </div>
       )}
-      {!hovered && (
-        <p className="hover-hint">↑ Hover over each part to learn more</p>
-      )}
+      <p className="hover-hint">Hover over each part to learn more</p>
       <div className="parsed-meta">
-        <span>Port: <strong>{parsed.port}</strong></span>
-        <span>Protocol: <strong>{parsed.protocol.toUpperCase()}</strong></span>
-        <span>Encrypted: <strong>{parsed.protocol === "https" ? "✓ Yes (TLS)" : "✗ No"}</strong></span>
+        <span>
+          Port: <strong>{parsed.port}</strong>
+        </span>
+        <span>
+          Protocol: <strong>{parsed.protocol.toUpperCase()}</strong>
+        </span>
+        <span>
+          Encrypted:{" "}
+          <strong>
+            {parsed.protocol === "https" ? "✓ Yes (TLS)" : "✗ No"}
+          </strong>
+        </span>
       </div>
     </section>
   );
-}
+};
