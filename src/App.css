@@ -596,52 +596,6 @@ main {
   }
 }
 
-/* LINEAR PIPELINE BAR */
-.pipeline-linear {
-  display: flex;
-  align-items: center;
-  overflow-x: auto;
-  padding: 16px 0 8px;
-  border-top: 1px solid var(--border);
-  margin-top: 16px;
-}
-.pipeline-dot {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: var(--border2);
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-.pipeline-dot.dot-revealed {
-  background: var(--step-color);
-  box-shadow: 0 0 8px var(--step-color);
-}
-.pipeline-dot.dot-active {
-  transform: scale(1.7);
-  box-shadow: 0 0 16px var(--step-color);
-}
-.pipeline-line {
-  width: 40px;
-  height: 1.5px;
-  background: var(--border2);
-  flex-shrink: 0;
-  transition: background 0.3s;
-}
-.pipeline-line.line-active {
-  background: linear-gradient(90deg, var(--accent2), var(--accent3));
-}
-.pipeline-hint {
-  color: var(--muted);
-  font-size: 11px;
-  margin-top: 12px;
-  text-align: center;
-  font-family: var(--mono);
-  letter-spacing: 0.3px;
-}
-
 /* STEP EXPLAINER */
 .step-explainer {
   margin-top: 20px;

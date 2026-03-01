@@ -102,24 +102,6 @@ const TOPICS = [
   },
 ];
 
-// const MARQUEE_ITEMS = [
-//   "DNS Resolution",
-//   "TCP Handshake",
-//   "How CDNs work",
-//   "Load Balancers",
-//   "Database Indexing",
-//   "JWT Auth",
-//   "How Redis caches data",
-//   "OAuth 2.0 flow",
-//   "How compilers work",
-//   "HTTP/2 vs HTTP/3",
-//   "Kubernetes scheduling",
-//   "Docker isolation",
-//   "TLS Handshake",
-//   "WebSockets",
-//   "gRPC vs REST",
-// ];
-
 const CATEGORIES = [
   "All",
   "Networking & Web",
@@ -180,17 +162,6 @@ export const Home = ({ setPage }) => {
           </div>
         </div>
       </section>
-
-      {/* <div className="home-marquee-wrap">
-        <div className="home-marquee-track">
-          {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
-            <span key={i} className="home-marquee-item">
-              <span className="marquee-bullet">⬡</span>
-              {item}
-            </span>
-          ))}
-        </div>
-      </div> */}
 
       <section className="home-topics">
         <div className="home-topics-header">
