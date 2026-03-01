@@ -11,7 +11,7 @@ export const CDN_STEPS = [
     { id: "invalidate", icon: "🔄", label: "Cache Invalidation", phase: "Management" }
 ]
 
-export const PHASE_COLORS = {
+export const CDN_PHASE_COLORS = {
     Client: "#ffd166",
     CDN: "#06d6a0",
     Origin: "#ff6b35",

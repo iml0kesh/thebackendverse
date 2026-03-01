@@ -555,6 +555,13 @@ main {
   transition: all 0.2s ease;
 }
 
+.pipeline-hint {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 12px;
+  text-align: center;
+}
+
 /* Hover */
 .nav-btn:hover {
   background: var(--bg3);

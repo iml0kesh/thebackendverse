@@ -42,11 +42,23 @@ export const JourneyPipeline = ({
     groupedPhases[groupedPhases.length - 1].steps.push({ ...step, index: i });
   });
 
+  const handleNext = () => {
+    if (activeStep < steps.length - 1) {
+      setActiveStep(activeStep + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (activeStep > 0) {
+      setActiveStep(activeStep - 1);
+    }
+  };
+
   return (
     <section className="journey-pipeline">
       <div className="phase-groups">
         {groupedPhases.map(({ phase, steps }) => (
-          <div key={phase} className="phase-group">
+          <div key={`${phase}-${steps[0].index}`} className="phase-group">
             <div className="phase-label" style={{ color: phaseColors[phase] }}>
               {phase}
             </div>
@@ -54,7 +66,7 @@ export const JourneyPipeline = ({
             <div className="phase-steps">
               {steps.map(({ id, icon, label, index }) => (
                 <button
-                  key={id}
+                  key={`${id}-${index}`}
                   className={`step-node ${index <= revealedUpTo ? "revealed" : "hidden"} ${activeStep === index ? "active" : ""}`}
                   style={{ "--step-color": phaseColors[phase] }}
                   onClick={() =>
@@ -85,12 +97,12 @@ export const JourneyPipeline = ({
           </button>
 
           <span className="step-indicator">
-            Step {activeStep + 1} of {STEPS.length}
+            Step {activeStep + 1} of {steps.length}
           </span>
 
           <button
             onClick={handleNext}
-            disabled={activeStep === STEPS.length - 1}
+            disabled={activeStep === steps.length - 1}
             className="nav-btn next"
           >
             Next →

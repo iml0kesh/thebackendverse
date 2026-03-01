@@ -1,4 +1,4 @@
-const STEP_DETAILS = (parsed) => [
+export const URL_STEP_DETAILS = (parsed) => [
     {
         title: "Browser — URL Parsing",
         phase: "Phase 1: Client Side",

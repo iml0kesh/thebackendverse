@@ -1,4 +1,4 @@
-export const URL_steps = [
+export const URL_STEPS = [
     { id: "browser", icon: "🌐", label: "Browser", phase: "Client" },
     { id: "cache", icon: "⚡", label: "Cache Check", phase: "Client" },
     { id: "dns", icon: "📡", label: "DNS Lookup", phase: "DNS" },
@@ -13,7 +13,7 @@ export const URL_steps = [
     { id: "render", icon: "🎨", label: "Browser Render", phase: "Client" },
 ]
 
-export const URL_phaseColors = {
+export const URL_PHASE_COLORS = {
     Client: "#ffd166",
     DNS: "#06d6a0",
     Connection: "#118ab2",

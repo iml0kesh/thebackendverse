@@ -1,4 +1,4 @@
-export const STEP_DETAILS = [
+export const CDN_STEP_DETAILS = [
     {
         title: "User Makes a Request",
         phase: "Phase 1: Client",
