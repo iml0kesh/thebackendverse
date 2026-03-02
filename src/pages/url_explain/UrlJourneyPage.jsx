@@ -57,7 +57,7 @@ export const UrlJourneyPage = () => {
   };
 
   return (
-    <main>
+    <main className="url-journey">
       <UrlInput url={url} setUrl={setUrl} onStart={handleStart} />
       {parsed && (
         <>

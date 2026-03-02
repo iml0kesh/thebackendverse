@@ -40,12 +40,13 @@ export const CdnJourneyPage = () => {
   ];
 
   return (
-    <main>
+    <main className="cdn-journey">
       <JourneyHero
         title="How a CDN Actually Works"
         subtitle="A Content Delivery Network serves files from servers physically near you — turning 200ms round trips into 8ms."
         onStart={handleStart}
         chips={["Cloudflare", "AWS CloudFront", "Fastly", "Akamai"]}
+        breadcrumb="Network Infrastructure"
       />
 
       {started && (

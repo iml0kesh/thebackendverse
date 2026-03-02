@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { TOPICS, CATEGORIES } from "./homeTopics";
 
-export const Home = ({ setPage }) => {
+export const Home = () => {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("All");
   const [visible, setVisible] = useState(false);
 
@@ -15,12 +17,20 @@ export const Home = ({ setPage }) => {
     (t) => activeCategory === "All" || t.tag === activeCategory,
   );
 
+  const getRouteForTopic = (id) => {
+    const routeMap = {
+      url: "/url",
+      cdn: "/cdn",
+    };
+    return routeMap[id] || "/";
+  };
+
   return (
     <div className="home-page">
       <section className={`home-hero ${visible ? "hero-visible" : ""}`}>
         <div className="home-eyebrow">
           <span className="eyebrow-dot" />
-          visual learning for backend engineers
+          Learn what runs under the hood
         </div>
         <h1 className="home-title">
           Every backend question
@@ -32,7 +42,7 @@ export const Home = ({ setPage }) => {
           DNS to databases, CDNs to compilers. No fluff. Just clarity.
         </p>
         <div className="home-hero-actions">
-          <button className="home-cta-btn" onClick={() => setPage("url")}>
+          <button className="home-cta-btn" onClick={() => navigate("/url")}>
             Start with URL Journey →
           </button>
           <div className="home-hero-stats">
@@ -75,7 +85,9 @@ export const Home = ({ setPage }) => {
             <div
               key={topic.id}
               className={`home-topic-card ${!topic.available ? "coming-soon" : ""} ${i === 0 && activeCategory === "All" ? "featured" : ""}`}
-              onClick={() => topic.available && setPage(topic.id)}
+              onClick={() =>
+                topic.available && navigate(getRouteForTopic(topic.id))
+              }
               style={{ cursor: topic.available ? "pointer" : "default" }}
             >
               {!topic.available && (
@@ -154,7 +166,7 @@ export const Home = ({ setPage }) => {
             </p>
           </div>
           <div className="home-cta-right">
-            <button className="home-cta-btn" onClick={() => setPage("url")}>
+            <button className="home-cta-btn" onClick={() => navigate("/url")}>
               Start URL Journey →
             </button>
             <p className="home-cta-note">No account needed · 100% free</p>

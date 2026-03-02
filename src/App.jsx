@@ -1,25 +1,27 @@
-import { useState } from "react";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { Home } from "./pages/landing_page/Home";
 import { UrlJourneyPage } from "./pages/url_explain/UrlJourneyPage";
 import { CdnJourneyPage } from "./pages/cdn_explain/CdnJourneyPage";
 import "./App.css";
 
 export const App = () => {
-  const [page, setPage] = useState("home");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isHome = location.pathname === "/";
 
   return (
     <div className="app">
       <header className="site-header">
         <div className="header-inner">
-          <div className="logo" onClick={() => setPage("home")}>
+          <div className="logo" onClick={() => navigate("/")}>
             <span className="logo-icon">⬡</span>
             <span className="logo-text">thebackendverse</span>
           </div>
           <div className="header-right">
-            {page !== "home" && (
+            {!isHome && (
               <button
                 className="header-back-chip"
-                onClick={() => setPage("home")}
+                onClick={() => navigate("/")}
               >
                 ← All topics
               </button>
@@ -29,9 +31,11 @@ export const App = () => {
         </div>
       </header>
 
-      {page === "home" && <Home setPage={setPage} />}
-      {page === "url" && <UrlJourneyPage onBack={() => setPage("home")} />}
-      {page === "cdn" && <CdnJourneyPage onBack={() => setPage("home")} />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/url" element={<UrlJourneyPage />} />
+        <Route path="/cdn" element={<CdnJourneyPage />} />
+      </Routes>
 
       <footer className="site-footer">
         <p>Built to demystify the backend · thebackendverse</p>

@@ -5,12 +5,18 @@ export const UrlInput = ({ url, setUrl, onStart }) => {
 
   return (
     <section className="url-input-section">
+      <div className="hero-breadcrumb">
+        <span className="breadcrumb-dot" />
+        HTTP & DNS Fundamentals
+      </div>
       <h1 className="main-title">
-        Backend Journey<br />
+        Backend Journey
+        <br />
         <span className="title-accent">Visualizer</span>
       </h1>
       <p className="subtitle">
-        Enter any URL and trace its entire journey — from your browser to a database and back.
+        Enter any URL and trace its entire journey — from your browser to a
+        database and back.
       </p>
       <div className="input-row">
         <div className="input-wrapper">
@@ -36,15 +42,11 @@ export const UrlInput = ({ url, setUrl, onStart }) => {
           "https://api.github.com/users/iml0kesh",
           "https://www.google.com/search?q=backend",
         ].map((ex) => (
-          <button
-            key={ex}
-            className="example-chip"
-            onClick={() => setUrl(ex)}
-          >
+          <button key={ex} className="example-chip" onClick={() => setUrl(ex)}>
             {ex.replace("https://", "")}
           </button>
         ))}
       </div>
     </section>
   );
-}
+};
