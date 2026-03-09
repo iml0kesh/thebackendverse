@@ -1,0 +1,28 @@
+CDN Journey Page
+.cdn-journey {
+  --accent: #ff6b35;
+  --accent-light: rgba(6, 214, 160, 0.1);
+}
+.cdn-journey .hero {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+}
+.cdn-journey .results {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 48px;
+  margin-bottom: 48px;
+}
+.cdn-journey .stats-banner > div:hover {
+  border-color: #ff6b35;
+  box-shadow: 0 4px 16px rgba(6, 214, 160, 0.12);
+}
+.cdn-journey .step-node.active {
+  border-color: #06d6a0;
+  background: rgba(6, 214, 160, 0.08);
+  box-shadow: 0 0 0 3px rgba(6, 214, 160, 0.15);
+}
+.cdn-journey .step-node:hover:not(:disabled) {
+  border-color: #06d6a0;
+  background: rgba(6, 214, 160, 0.08);
+}

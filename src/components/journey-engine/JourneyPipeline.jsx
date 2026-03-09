@@ -56,6 +56,10 @@ export const JourneyPipeline = ({
 
   return (
     <section className="journey-pipeline">
+      <h2 className="section-title">
+        The Full Journey
+        {started && <span className="journey-live">● Live</span>}
+      </h2>
       <div className="phase-groups">
         {groupedPhases.map(({ phase, steps }) => (
           <div key={`${phase}-${steps[0].index}`} className="phase-group">

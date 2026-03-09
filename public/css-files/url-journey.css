@@ -1,0 +1,24 @@
+/* URL Journey Page */
+.url-journey {
+  --accent: #ff6b35;
+  --accent-light: rgba(255, 107, 53, 0.1);
+}
+.url-journey .hero {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+}
+.url-journey .results {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 48px;
+  margin-bottom: 48px;
+}
+.url-journey .step-node.active {
+  border-color: #ff6b35;
+  background: rgba(255, 107, 53, 0.08);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+}
+.url-journey .step-node:hover:not(:disabled) {
+  border-color: #ff6b35;
+  background: rgba(255, 107, 53, 0.08);
+}

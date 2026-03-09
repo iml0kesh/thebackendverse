@@ -21,8 +21,18 @@ export const Home = () => {
     const routeMap = {
       url: "/url",
       cdn: "/cdn",
+      compiler: "/compiler",
+      osi: "/osi",
     };
     return routeMap[id] || "/";
+  };
+
+  const handleCardKeyDown = (e, topic) => {
+    if (!topic.available) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate(getRouteForTopic(topic.id));
+    }
   };
 
   return (
@@ -38,8 +48,8 @@ export const Home = () => {
           <span className="home-title-accent">you were afraid to ask</span>
         </h1>
         <p className="home-subtitle">
-          Interactive, animated explanations of how things actually work — from
-          DNS to databases, CDNs to compilers. No fluff. Just clarity.
+          Stop wondering. Start understanding. Every confusing concept explained
+          visually, step by step.
         </p>
         <div className="home-hero-actions">
           <button className="home-cta-btn" onClick={() => navigate("/url")}>
@@ -55,11 +65,11 @@ export const Home = () => {
               <span className="hero-stat-num">5</span>
               <span className="hero-stat-label">Categories</span>
             </div>
-            <div className="hero-stat-divider" />
+            {/* <div className="hero-stat-divider" />
             <div className="hero-stat">
               <span className="hero-stat-num">100%</span>
               <span className="hero-stat-label">Free</span>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
@@ -88,6 +98,9 @@ export const Home = () => {
               onClick={() =>
                 topic.available && navigate(getRouteForTopic(topic.id))
               }
+              role={topic.available ? "button" : undefined}
+              tabIndex={topic.available ? 0 : undefined}
+              onKeyDown={(e) => handleCardKeyDown(e, topic)}
               style={{ cursor: topic.available ? "pointer" : "default" }}
             >
               {!topic.available && (
@@ -133,8 +146,8 @@ export const Home = () => {
               },
               {
                 num: "02",
-                title: "Watch it animate",
-                desc: "Each topic has an animated pipeline showing the full journey step by step. Pause anywhere, or jump to what you care about.",
+                title: " Follow the pipeline",
+                desc: " Watch each stage of the journey reveal step by step, from browser to database and back.",
               },
               {
                 num: "03",
@@ -151,7 +164,6 @@ export const Home = () => {
           </div>
         </div>
       </section>
-
       <section className="home-cta">
         <div className="home-cta-inner">
           <div>

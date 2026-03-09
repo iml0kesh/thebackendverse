@@ -1,14 +1,12 @@
 export const URL_STEP_DETAILS = (parsed) => [
     {
-        title: "Browser — URL Parsing",
+        title: "1. Browser Parses URL",
         phase: "Phase 1: Client Side",
-        summary: `When you press Enter, the browser immediately begins parsing the URL. It identifies the protocol (${parsed.protocol.toUpperCase()}), the host (${parsed.domain}), and the path (${parsed.path || "/"}). The browser also checks if it has the resource cached locally.`,
+        summary: `When you press Enter, the browser first needs to understand the URL. It breaks it down into its core parts: the protocol (${parsed.protocol.toUpperCase()}), the domain name (${parsed.domain}), and the specific path (${parsed.path || "/"}).`,
         technical: [
-            "URL is tokenized into: protocol, authority (host + port), path, query, fragment",
-            `Port resolved to ${parsed.port} (default for ${parsed.protocol.toUpperCase()})`,
-            "Browser checks HTTP cache (disk cache, memory cache) for a valid cached response",
-            "Checks browser's own DNS cache (~60 sec TTL) before making a network request",
-            "Applies Content Security Policy (CSP) rules before proceeding",
+            "The browser breaks the URL into parts: protocol, host, and path.",
+            `It determines the port to connect to: ${parsed.port} (the default for ${parsed.protocol.toUpperCase()}).`,
+            "Before making a network request, it checks its own cache for a ready-made copy.",
         ],
         code: `// Internally similar to:
 const url = new URL("${parsed.protocol}://${parsed.subdomain ? parsed.subdomain + "." : ""}${parsed.domain}${parsed.path || "/"}");
@@ -17,16 +15,15 @@ console.log(url.hostname); // "${parsed.domain}"
 console.log(url.pathname); // "${parsed.path || "/"}"`,
     },
     {
-        title: "Cache Check",
+        title: "2. Cache Check",
         phase: "Phase 1: Client Side",
-        summary:
-            "Before any network request is made, the browser checks multiple layers of cache. A cache hit can serve the entire response in under 1ms — totally bypassing DNS, TCP, TLS, and the server.",
+        summary: "Before making a single network request, the browser checks several layers of cache. A 'cache hit' is incredibly fast and can serve the entire page in milliseconds, skipping all the network steps.",
         technical: [
-            "Memory cache — fastest, stores recently used resources in RAM",
-            "Disk cache — persists across browser restarts, based on Cache-Control headers",
-            "Service Worker cache — if a Service Worker is registered, it intercepts here",
-            "HTTP cache validation: If-None-Match (ETag) or If-Modified-Since headers used for stale-while-revalidate",
-            "On a cache miss, request proceeds to OS/DNS layer",
+            "1. Memory Cache: The fastest cache, for items you just accessed.",
+            "2. Disk Cache: Persists even after you close the browser.",
+            "3. Service Worker: An advanced cache that can make the site work offline.",
+            "If a cached item is 'stale', the browser asks the server if it's still valid using an ETag.",
+            "If it's a 'Cache Miss', the journey continues to the network.",
         ],
         code: `// Cache-Control header examples:
 Cache-Control: max-age=3600          // cache 1 hour
@@ -38,16 +35,15 @@ Cache-Control: stale-while-revalidate=60  // serve stale, update async
 // Server replies: 304 Not Modified (no body!) or 200 with new ETag`,
     },
     {
-        title: "DNS Resolution",
+        title: "3. DNS Resolution",
         phase: "Phase 2: DNS",
-        summary: `The browser asks the OS to resolve "${parsed.domain}" into an IP address. If not cached, it queries a DNS resolver which walks the DNS tree from root → TLD → authoritative nameserver.`,
+        summary: `The browser needs to translate the human-readable domain name (${parsed.domain}) into a machine-readable IP address. Think of it like looking up a contact's name to find their phone number.`,
         technical: [
             `Query: What is the IP for ${parsed.domain}?`,
-            "OS checks /etc/hosts file first, then OS DNS cache",
-            "Queries configured DNS resolver (e.g., 8.8.8.8 Google, 1.1.1.1 Cloudflare)",
-            "Resolver asks Root DNS (13 root server clusters globally) → .com TLD → authoritative NS",
-            `Gets back an A record (IPv4) or AAAA record (IPv6) with a TTL`,
-            "Entire round trip is typically 10–50ms on a cold DNS lookup",
+            "The browser asks the Operating System (OS), which checks its own cache and hosts file first.",
+            "If not found, it asks a DNS Resolver (like your ISP's, or Google's 8.8.8.8).",
+            `The resolver finds the IP by asking a chain of servers: Root → .com → the authoritative server for ${parsed.domain}.`,
+            `It gets back an IP address (an 'A' record) and caches it for a short time (TTL).`,
         ],
         code: `# Full DNS trace (run in terminal):
 dig +trace ${parsed.domain}
@@ -57,17 +53,13 @@ dig +trace ${parsed.domain}
 # Returns: A record → e.g., 157.240.22.174 TTL 300`,
     },
     {
-        title: "TCP 3-Way Handshake",
+        title: "4. TCP 3-Way Handshake",
         phase: "Phase 3: Connection Setup",
-        summary:
-            "TCP establishes a reliable, ordered connection before any data is sent. This 3-step handshake takes 1 full round-trip time (RTT) — typically 10–100ms depending on server distance.",
+        summary: "Before sending any data, your computer establishes a reliable connection with the server. This is like a polite phone call: you say 'hello', they say 'hello' back, and you confirm you heard them. This takes one full network round-trip.",
         technical: [
-            "SYN — Client sends SYN packet with a random sequence number to server:443",
-            "SYN-ACK — Server acknowledges, picks its own sequence number, replies SYN-ACK",
-            "ACK — Client sends ACK, connection is established",
-            "TCP uses congestion control (slow start) — begins sending small amounts of data, ramps up",
-            "Nagle's algorithm may batch small packets to reduce overhead",
-            "HTTP/2 multiplexes multiple streams over one TCP connection to avoid repeated handshakes",
+            "1. SYN: Your computer sends a SYN (synchronize) packet to the server.",
+            "2. SYN-ACK: The server sends back a SYN-ACK (synchronize-acknowledge) packet.",
+            "3. ACK: Your computer sends a final ACK (acknowledge) packet. The connection is now open.",
         ],
         code: `# Visualize TCP (SYN flags):
 Client  ────SYN (seq=1000)────►  Server
@@ -76,16 +68,14 @@ Client  ────ACK (ack=2001)────►  Server
 # Connection ESTABLISHED — costs 1 RTT`,
     },
     {
-        title: "TLS Handshake",
+        title: "5. TLS Handshake",
         phase: "Phase 3: Connection Setup",
-        summary: `Since the URL uses HTTPS, a TLS handshake negotiates encryption. TLS 1.3 completes in 1 RTT (vs 2 for TLS 1.2). The server's certificate proves it really is ${parsed.domain}.`,
+        summary: `This is the secret handshake. Because the URL uses HTTPS, the connection must be secured. This process verifies that you're talking to the real ${parsed.domain} and encrypts all communication so nobody can eavesdrop.`,
         technical: [
-            "Client Hello: browser sends supported cipher suites and TLS version",
-            "Server Hello: server picks cipher suite (e.g., TLS_AES_256_GCM_SHA384), sends certificate",
-            "Certificate validation: browser checks cert against trusted CAs (Certificate Authorities), verifies domain matches, checks expiry and revocation (OCSP)",
-            "Key Exchange: using ECDHE (Elliptic Curve Diffie-Hellman), both sides derive a shared secret without sending it over the wire",
-            "Session keys derived — all further traffic encrypted symmetrically (fast)",
-            "TLS 1.3 supports 0-RTT resumption for repeat connections",
+            "1. Client Hello: Your browser sends its capabilities (TLS version, cipher suites).",
+            "2. Server Hello & Certificate: The server chooses the encryption method and presents its SSL certificate as proof of identity.",
+            "3. Verification: Your browser checks if the certificate is valid and issued by a trusted Certificate Authority (CA).",
+            "4. Key Exchange: Both sides use a clever math trick to agree on a secret session key for encryption.",
         ],
         code: `# Check TLS details:
 openssl s_client -connect ${parsed.domain}:443 -tls1_3
@@ -97,17 +87,14 @@ Client ──Finished──► Server
 # Both now share symmetric keys. Traffic is encrypted.`,
     },
     {
-        title: "Internet Transit",
+        title: "6. Across the Internet",
         phase: "Phase 4: Network",
-        summary:
-            "Your request travels as IP packets across the public internet — through ISPs, internet exchange points (IXPs), and undersea cables — before reaching the destination server's data center.",
+        summary: "Your HTTP request, now encrypted and broken into small data packets, travels across the global network of routers, switches, and undersea cables to find the server's IP address.",
         technical: [
-            "Data broken into MTU-sized packets (~1500 bytes) at the IP layer",
-            "Each router uses BGP (Border Gateway Protocol) to forward packets toward the destination",
-            "Large CDNs (Cloudflare, Fastly, Akamai) serve edge nodes closer to users to reduce latency",
-            "Physical path: your router → ISP → backbone → destination AS (Autonomous System)",
-            `${parsed.domain} likely uses a CDN — your packets may never leave your continent`,
-            "Traceroute shows the actual path: traceroute " + parsed.domain,
+            "The request is broken into small IP packets, each with the source and destination IP address.",
+            "Routers along the way use a 'map' of the internet (BGP) to find the fastest path.",
+            "If the site uses a CDN, this journey might be very short, ending at a server in a nearby city.",
+            "The physical path goes from your router, to your ISP, across the internet backbone, to the server's network.",
         ],
         code: `# Trace the physical route:
 traceroute ${parsed.domain}
@@ -120,17 +107,14 @@ traceroute ${parsed.domain}
 # 13  157.240.x.x (destination)`,
     },
     {
-        title: "Load Balancer",
+        title: "7. Load Balancer",
         phase: "Phase 5: Server Side",
-        summary:
-            "The request hits a load balancer before any application server. Its job is to distribute traffic across a fleet of servers, ensuring no single machine is overwhelmed and enabling horizontal scaling.",
+        summary: "High-traffic websites don't run on a single server. The request first hits a load balancer, which acts like a traffic cop, distributing incoming requests across a fleet of servers to prevent any single one from being overloaded.",
         technical: [
-            "Common load balancers: Nginx, HAProxy, AWS ALB/NLB, Cloudflare",
-            "Algorithms: Round Robin, Least Connections, IP Hash, Weighted",
-            "L4 load balancing (TCP level) vs L7 (HTTP level — can route by path, headers)",
-            "Health checks — LB polls servers every few seconds; removes unhealthy ones from rotation",
-            "SSL termination often happens here — backend servers receive plain HTTP",
-            "Sticky sessions: some LBs pin a user to the same server for stateful apps",
+            "It uses an algorithm (like 'Round Robin' or 'Least Connections') to pick the best server.",
+            "It constantly runs health checks and removes unhealthy servers from the pool.",
+            "Often, this is where encryption (TLS) is handled, so backend servers don't have to.",
+            "It ensures the site stays available and can handle many users at once.",
         ],
         code: `# Nginx load balancer config example:
 upstream backend_pool {
@@ -148,17 +132,14 @@ server {
 }`,
     },
     {
-        title: "Web Server",
+        title: "8. Web Server",
         phase: "Phase 5: Server Side",
-        summary:
-            "The web server (Nginx, Apache, Caddy) receives the HTTP request. For static assets (images, JS, CSS), it responds immediately. For dynamic requests, it forwards to the application server.",
+        summary: "The request arrives at a web server (like Nginx or Apache). Its main job is to handle the HTTP request and either serve a static file directly or pass the request to the application for dynamic content.",
         technical: [
-            "Parses incoming HTTP request: method, path, headers, body",
-            "Serves static files directly from disk (extremely fast — no app code involved)",
-            "For dynamic routes, reverse-proxies to the app server (uWSGI, Gunicorn, Tomcat, etc.)",
-            "Handles gzip/brotli compression of responses",
-            "Enforces rate limiting, request size limits, access control",
-            "Logs every request (access.log) for analytics and debugging",
+            "It parses the incoming HTTP request (method, path, headers).",
+            "If you requested a static file (image, CSS), it serves it directly from the disk (very fast).",
+            "If it's a dynamic request, it acts as a reverse proxy, forwarding it to the application server.",
+            "It can also handle tasks like compression and rate limiting.",
         ],
         code: `# Incoming HTTP request the server sees:
 GET ${parsed.path || "/"} HTTP/2
@@ -171,17 +152,14 @@ Cookie: sessionid=abc123; csrftoken=xyz
 # Web server decides: static file or proxy to app?`,
     },
     {
-        title: "Application Server",
+        title: "9. Application Server",
         phase: "Phase 5: Server Side",
-        summary:
-            "The app server runs your actual business logic — authentication, data processing, API orchestration. It's written in Node.js, Python, Go, Java, etc. and handles the dynamic part of the request.",
+        summary: "This is where the site's custom code runs. The application server (running Node.js, Python, Java, etc.) executes the business logic needed to handle the request.",
         technical: [
-            "Framework receives request: Express (Node), Django (Python), Spring (Java), Rails (Ruby)",
-            "Middleware pipeline runs: auth, logging, request parsing, CORS",
-            "Route matched → controller/handler function invoked",
-            "Business logic executed: auth check, permission check, data transformation",
-            "May call internal microservices, external APIs, caches (Redis)",
-            "Constructs a response object (JSON, HTML, redirect) and sends it back",
+            "The application framework (like Express, Django, Rails) takes over.",
+            "It runs a series of middleware (for logging, authentication, etc.).",
+            "It matches the path to a specific route handler in your code.",
+            "This is where your code runs: authenticating users, processing forms, and preparing data for the response.",
         ],
         code: `// Example Express.js route handler:
 app.get("${parsed.path || "/"}", async (req, res) => {
@@ -197,17 +175,14 @@ app.get("${parsed.path || "/"}", async (req, res) => {
 });`,
     },
     {
-        title: "Database",
+        title: "10. Database",
         phase: "Phase 5: Server Side",
-        summary:
-            "The app server queries a database to read or write persistent data. This is often the slowest step — optimizing DB queries (indexes, query planning, connection pooling) is critical for performance.",
+        summary: "Most applications need to store data permanently. The application server queries a database to read or write information. This is often the slowest part of the request, so database performance is critical.",
         technical: [
-            "SQL (PostgreSQL, MySQL) or NoSQL (MongoDB, DynamoDB, Cassandra) depending on data model",
-            "Query sent over a connection pool (pg-pool, HikariCP) — creating fresh DB connections is expensive",
-            "Database query planner analyzes query and decides execution plan (index scan vs full table scan)",
-            "Results fetched from disk pages or OS buffer cache (hot data stays in RAM)",
-            "Cache layer (Redis/Memcached) often sits in front of the DB for frequently-read data",
-            "ORM (Sequelize, Hibernate, Prisma) translates object calls to raw SQL",
+            "The app connects to a database (like PostgreSQL, MongoDB) to get or save information.",
+            "It uses a connection pool to avoid the slow process of creating new connections for every query.",
+            "The database's query planner figures out the most efficient way to find the data.",
+            "Using an index is like using the index in a book—much faster than a full table scan.",
         ],
         code: `-- SQL query example:
 EXPLAIN ANALYZE
@@ -223,17 +198,14 @@ LIMIT 1;
 -- Execution Time: 0.8ms  ✓`,
     },
     {
-        title: "HTTP Response",
+        title: "11. Server Responds",
         phase: "Phase 6: Response Journey",
-        summary:
-            "The server packages the result into an HTTP response and sends it back through the internet. The response travels the same path in reverse — through the internet, to your ISP, to your device.",
+        summary: "The application server packages the result into an HTTP response and sends it back. The response travels the same path in reverse—through the internet, to your ISP, and finally to your browser.",
         technical: [
-            "Status code communicates outcome: 200 OK, 301 Redirect, 404 Not Found, 500 Server Error",
-            "Response headers set: Content-Type, Cache-Control, ETag, Set-Cookie, CORS headers",
-            "Body can be HTML, JSON, binary (images), or a stream",
-            "Gzip/Brotli compression applied (reduces size 60–80%)",
-            "Response split into TCP packets, reassembled in order by receiver's TCP stack",
-            "Time-to-first-byte (TTFB) is measured here — a key performance metric",
+            "A Status Code indicates the result (e.g., 200 OK, 404 Not Found).",
+            "Headers provide metadata (like Content-Type and Cache-Control).",
+            "The Body contains the actual content (HTML, JSON, etc.).",
+            "The body is usually compressed (gzip/brotli) to save bandwidth and speed up the transfer.",
         ],
         code: `HTTP/2 200 OK
 Content-Type: text/html; charset=UTF-8
@@ -247,18 +219,15 @@ Set-Cookie: ig_did=ABCD; Domain=.instagram.com; Secure; HttpOnly
 <html lang="en">...`,
     },
     {
-        title: "Browser Rendering",
+        title: "12. Browser Renders Page",
         phase: "Phase 7: Rendering",
-        summary:
-            "The browser receives the HTML and starts constructing the page. It parses HTML → builds the DOM, fetches and applies CSS → builds CSSOM, executes JavaScript, and finally paints pixels to the screen.",
+        summary: "The browser receives the HTML and begins the process of turning code into a visible webpage. It builds the page structure, applies styles, executes scripts, and paints the final pixels to your screen.",
         technical: [
-            "HTML parsing → DOM (Document Object Model) tree built incrementally",
-            "CSS parsing → CSSOM (CSS Object Model) built, combined with DOM → Render Tree",
-            "Layout (Reflow) — browser calculates exact position and size of every element",
-            "Paint — browser draws pixels for each element into layers",
-            "Composite — GPU combines layers into the final visible frame",
-            "JavaScript execution on main thread can block rendering — use async/defer",
-            "Core Web Vitals: LCP (largest paint), CLS (layout shift), FID/INP (interactivity)",
+            "1. Parse HTML: Creates a structure of the page called the DOM tree.",
+            "2. Parse CSS: Creates a CSSOM tree of all styles.",
+            "3. Layout: Calculates the exact size and position of every element.",
+            "4. Paint: Draws the visual parts of each element.",
+            "5. Composite: Puts all the painted layers together to form the final image you see.",
         ],
         code: `// Browser rendering pipeline:
 HTML bytes

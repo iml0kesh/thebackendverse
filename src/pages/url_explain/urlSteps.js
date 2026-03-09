@@ -1,16 +1,16 @@
 export const URL_STEPS = [
-    { id: "browser", icon: "🌐", label: "Browser", phase: "Client" },
+    { id: "browser", icon: "🌐", label: "Browser Parses URL", phase: "Client" },
     { id: "cache", icon: "⚡", label: "Cache Check", phase: "Client" },
     { id: "dns", icon: "📡", label: "DNS Lookup", phase: "DNS" },
     { id: "tcp", icon: "🔗", label: "TCP Handshake", phase: "Connection" },
     { id: "tls", icon: "🔒", label: "TLS Handshake", phase: "Connection" },
-    { id: "internet", icon: "🌍", label: "Internet", phase: "Network" },
+    { id: "internet", icon: "🌍", label: "Across the Internet", phase: "Network" },
     { id: "loadbalancer", icon: "⚖️", label: "Load Balancer", phase: "Server" },
     { id: "webserver", icon: "🖥️", label: "Web Server", phase: "Server" },
     { id: "appserver", icon: "⚙️", label: "App Server", phase: "Server" },
     { id: "database", icon: "🗄️", label: "Database", phase: "Server" },
-    { id: "response", icon: "📦", label: "Response", phase: "Response" },
-    { id: "render", icon: "🎨", label: "Browser Render", phase: "Client" },
+    { id: "response", icon: "📦", label: "Server Responds", phase: "Response" },
+    { id: "render", icon: "🎨", label: "Browser Renders Page", phase: "Client" },
 ]
 
 export const URL_PHASE_COLORS = {

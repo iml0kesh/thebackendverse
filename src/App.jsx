@@ -1,7 +1,17 @@
-import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useNavigate,
+  useLocation,
+  Link,
+} from "react-router-dom";
+
 import { Home } from "./pages/landing_page/Home";
 import { UrlJourneyPage } from "./pages/url_explain/UrlJourneyPage";
 import { CdnJourneyPage } from "./pages/cdn_explain/CdnJourneyPage";
+import { CompilerJourneyPage } from "./pages/compiler_explain/CompilerJourneyPage";
+import { OsiJourneyPage } from "./pages/osi_explain/OsiJourneyPage";
+
 import "./App.css";
 
 export const App = () => {
@@ -13,10 +23,14 @@ export const App = () => {
     <div className="app">
       <header className="site-header">
         <div className="header-inner">
-          <div className="logo" onClick={() => navigate("/")}>
+          <Link
+            to="/"
+            className="logo"
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
             <span className="logo-icon">⬡</span>
             <span className="logo-text">thebackendverse</span>
-          </div>
+          </Link>
           <div className="header-right">
             {!isHome && (
               <button
@@ -35,6 +49,8 @@ export const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/url" element={<UrlJourneyPage />} />
         <Route path="/cdn" element={<CdnJourneyPage />} />
+        <Route path="/compiler" element={<CompilerJourneyPage />} />
+        <Route path="/osi" element={<OsiJourneyPage />} />
       </Routes>
 
       <footer className="site-footer">

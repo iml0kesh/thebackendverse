@@ -74,7 +74,7 @@ export const TOPICS = [
     desc: "Lexer → parser → AST → IR → machine code. Every step explained.",
     steps: 11,
     time: "~9 min",
-    available: false,
+    available: true,
   },
   {
     id: "docker",
@@ -98,6 +98,17 @@ export const TOPICS = [
     time: "~5 min",
     available: false,
   },
+  {
+    id: "osi",
+    icon: "🌐",
+    tag: "Networking & Web",
+    tagColor: "#ffd166",
+    title: "The OSI Model",
+    desc: "The 7 layers of networking. How data travels from your screen to the wire.",
+    steps: 7,
+    time: "~5 min",
+    available: true,
+  }
 ];
 
 export const CATEGORIES = [
