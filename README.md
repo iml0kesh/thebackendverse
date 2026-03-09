@@ -1,16 +1,74 @@
-# React + Vite
+# thebackendverse ⬡
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Every backend question you were afraid to ask.**
 
-Currently, two official plugins are available:
+Stop wondering. Start understanding. Every confusing concept explained visually, step by step. From Request to Response.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 About
 
-## React Compiler
+thebackendverse is an interactive learning platform designed to demystify complex backend engineering concepts. Instead of reading long articles, you follow a visual "journey" that breaks down processes like HTTP requests, compilation, and networking into digestible steps.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Note:** This project is intended as a learning resource. While the code is open source, the goal is to understand the concepts, not just clone the repo!
 
-## Expanding the ESLint configuration
+## 📚 Topics
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Currently available journeys:
+
+- **URL Journey**: What happens when you type a URL and press Enter? (DNS, TCP, TLS, etc.)
+- **CDN Explained**: How Content Delivery Networks serve files faster.
+- **Compiler Pipeline**: From source code to machine code (Lexer, Parser, AST, IR).
+- **The OSI Model**: The 7 layers of networking.
+
+Coming soon:
+
+- Load Balancers
+- Database Indexing
+- OAuth & Security
+- Docker & Containers
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React 19
+- **Build Tool**: Vite
+- **Routing**: React Router v7
+- **Styling**: CSS Modules / Vanilla CSS
+
+## 🏃‍♂️ Getting Started
+
+1.  **Clone the repository**
+
+    ```bash
+    git clone https://github.com/yourusername/thebackendverse.git
+    cd thebackendverse
+    ```
+
+2.  **Install dependencies**
+
+    ```bash
+    npm install
+    ```
+
+3.  **Run the development server**
+
+    ```bash
+    npm run dev
+    ```
+
+4.  **Open your browser**
+    Navigate to `http://localhost:5173` to start exploring.
+
+## 🤝 Contributing
+
+Contributions are welcome! If you have a topic you want to explain or found a bug, please open an issue or submit a pull request.
+
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/new-feature`)
+3.  Commit your Changes (`git commit -m 'Add some new feature'`)
+4.  Push to the Branch (`git push origin feature/new-feature`)
+5.  Open a Pull Request
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+Copyright (c) 2026 thebackendverse
