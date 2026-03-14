@@ -1,205 +1,92 @@
 export const CDN_STEP_DETAILS = [
     {
-        title: "1. User Makes a Request",
-        phase: "Phase 1: Client",
-        summary:
-            "You click a link or type a URL. Without a CDN, your request has to travel all the way to the main server (the 'Origin'), which might be on the other side of the world. That distance creates delay (latency).",
+        title: "1. Client Request & Anycast DNS",
+        phase: "Phase 1: Routing",
+        analogy: "Calling a national 1-800 number and getting automatically routed to the customer service agent closest to your city.",
+        summary: "When a user requests a file, the DNS uses Anycast routing. Instead of pointing to a single origin server, the IP address directs the user to the closest available CDN Edge Server geographically.",
         technical: [
-            "The browser sends a GET request for a file (like an image or script).",
-            "Distance = Time. If you are in India and the server is in the US, the signal takes ~200ms just to travel there and back.",
-            "CDNs fix this by placing servers (Edge Nodes) in cities all over the world, close to you.",
+            "Anycast Routing: Multiple edge servers share the same IP address; BGP routing sends the user to the topologically closest node.",
+            "Latency Reduction: By connecting to a server in their own city rather than across the globe, the TCP/TLS handshake time is drastically reduced.",
+            "DDoS Mitigation: Traffic is absorbed locally across hundreds of data centers, preventing massive spikes from hitting the origin."
         ],
-        code: `# Without CDN: Long trip
-GET https://api.mysite.com/image.jpg
-# 🇮🇳 India → 🇺🇸 US Server → 🇮🇳 India
-# Time: ~200ms (Slow!)
+        code: `# DNS resolution hits the Edge
+nslookup cdn.yoursite.com
 
-# With CDN: Short trip
-GET https://cdn.mysite.com/image.jpg
-# 🇮🇳 India → 🇮🇳 Mumbai Edge Node → 🇮🇳 India
-# Time: ~10ms (Fast!)`,
+# User in London gets: 104.16.x.x (London Edge)
+# User in Tokyo gets: 104.16.x.x (Tokyo Edge)
+# Same IP, different physical machine!`
     },
     {
-        title: "2. DNS Resolution (Finding the Path)",
-        phase: "Phase 1: Client",
-        summary:
-            "How does your computer know which CDN server is closest? It uses a trick called 'Anycast'. It's like calling 911 — you dial the same number everywhere, but the network automatically connects you to the nearest dispatch center.",
+        title: "2. Edge Server Interception",
+        phase: "Phase 2: Edge Processing",
+        analogy: "The local branch office picking up the phone to take your order.",
+        summary: "The request arrives at the local CDN Edge Server (Point of Presence or PoP). The server terminates the secure connection and prepares to fulfill the HTTP request.",
         technical: [
-            "The CDN announces the SAME IP address from hundreds of locations worldwide.",
-            "The internet's routing system (BGP) automatically guides your request to the physically closest server.",
-            "You don't need to configure anything; the network does the work.",
+            "PoP (Point of Presence): Data centers located strategically around the world.",
+            "SSL Termination: The CDN handles the intensive TLS decryption locally, saving the origin server from CPU-heavy cryptographic work.",
+            "Edge Logic: Cloudflare Workers, AWS Lambda@Edge, or VCL run here to manipulate headers, block bad bots, or execute lightweight code."
         ],
-        code: `# Magic: The same domain resolves to different locations based on where YOU are.
-
-# If you are in London:
-ping cdn.site.com
-# → Connects to London Server (IP: 1.2.3.4)
-
-# If you are in Tokyo:
-ping cdn.site.com
-# → Connects to Tokyo Server (IP: 1.2.3.4)
-# (Same IP, different physical machine!)`,
+        code: `// Example Edge Function (Cloudflare Worker)
+addEventListener("fetch", event => {
+  // Block suspicious traffic before it hits origin
+  if (event.request.headers.get("User-Agent").includes("BadBot")) {
+    return event.respondWith(new Response("Blocked", { status: 403 }));
+  }
+});`
     },
     {
-        title: "3. Edge Node Selection",
-        phase: "Phase 2: CDN",
-        summary:
-            "Your request arrives at the 'Edge Node' — a CDN server located in a data center near you (e.g., in your city). This server acts as the first line of defense and delivery.",
+        title: "3. Cache Lookup",
+        phase: "Phase 2: Edge Processing",
+        analogy: "The local branch worker checking their local stockroom to see if they already have the item you want.",
+        summary: "The Edge Server checks its local memory and solid-state drives to see if a valid, unexpired copy of the requested asset already exists.",
         technical: [
-            "PoP (Point of Presence): A data center where CDN servers live.",
-            "The CDN checks: Is this server healthy? Is it overloaded?",
-            "If the nearest one is busy, it might route you to the next closest city.",
+            "Cache Key Generation: The CDN uses the URL, and sometimes specific headers or query strings, to create a unique hash (Cache Key).",
+            "Eviction Policies: Algorithms like LRU (Least Recently Used) determine which old files to delete to make room for new ones.",
+            "TTL (Time To Live): Determines how long an asset is considered 'fresh' before it must be re-verified."
         ],
-        code: `# Tracing the path to the server:
+        code: `// Internal CDN logic
+const cacheKey = generateHash(request.url + request.headers["Accept-Encoding"]);
+const cachedAsset = await edgeCache.get(cacheKey);
 
-traceroute cdn.site.com
-
-# 1  192.168.1.1    (Your Router)
-# 2  10.0.0.1       (Your ISP)
-# ...
-# 6  104.21.12.5    (CDN Edge Node - 5ms away!)
-
-# It stops here. It doesn't go all the way to the Origin server yet.`,
+if (cachedAsset && !isExpired(cachedAsset.ttl)) {
+    return "CACHE HIT";
+} else {
+    return "CACHE MISS";
+}`
     },
     {
-        title: "4. Edge Node Receives Request",
-        phase: "Phase 2: CDN",
-        summary:
-            "The Edge Node receives your request. It looks at the URL and headers to create a 'Cache Key' — a unique ID for that specific file. It then checks its local storage to see if it already has that file.",
+        title: "4. Origin Fetch (Cache Miss)",
+        phase: "Phase 3: Fallback",
+        analogy: "The local branch doesn't have the item, so they order it from the main warehouse on your behalf.",
+        summary: "If the asset is missing or expired (a 'Cache Miss'), the Edge Server acts as a proxy and requests the asset from your actual backend Origin Server.",
         technical: [
-            "Cache Key: Usually the URL (e.g., '/style.css').",
-            "The server also checks security rules (WAF) to block hackers/bots right here at the edge.",
-            "It prepares to look in its memory (RAM) or hard drive (SSD) for the content.",
+            "Reverse Proxying: The Edge server opens a connection to the Origin Server.",
+            "Connection Pooling: CDNs keep persistent connections to the origin open to avoid repeated TCP handshakes.",
+            "Tiered Caching: Some CDNs have 'Regional Edge Caches'. If the local edge misses, it checks a larger regional cache before bothering the origin."
         ],
-        code: `# How the CDN identifies the file:
-
-Request: GET /images/logo.png
-Host: cdn.site.com
-
-# Cache Key generated by CDN:
-key = "cdn.site.com/images/logo.png"
-
-# The CDN asks itself:
-# "Do I have 'cdn.site.com/images/logo.png' in my storage?"`,
+        code: `# Edge server fetching from Origin
+GET /images/hero.jpg HTTP/2
+Host: origin.yoursite.com
+X-Forwarded-For: 203.0.113.5  # Passing original client IP
+CDN-Loop: cloudflare`
     },
     {
-        title: "5. Cache Check — HIT or MISS?",
-        phase: "Phase 2: CDN",
-        summary:
-            "This is the moment of truth. Does the Edge Node have the file? \n\n**HIT**: Yes! I have it. \n**MISS**: No, I don't (or it expired).",
-        technical: [
-            "Cache HIT: The file is found locally. Great! We serve it immediately.",
-            "Cache MISS: The file isn't here. We have to go ask the Origin server for it.",
-            "Hit Ratio: The percentage of requests served from cache. You want this high (90%+).",
-        ],
-        code: `# Checking the response headers:
-
-# Scenario A: Cache HIT (Fast)
-CF-Cache-Status: HIT
-Age: 300  (I've held this file for 5 minutes)
-
-# Scenario B: Cache MISS (Slower)
-CF-Cache-Status: MISS
-# (The CDN had to fetch this from the origin)`,
-    },
-    {
-        title: "6. Cache HIT — Instant Response",
-        phase: "Phase 2: CDN",
-        summary:
-            "If it's a HIT, the Edge Node sends the file back to you immediately. The Origin server (your main database/backend) doesn't even know this request happened. This saves money and server load.",
-        technical: [
-            "Zero round-trips to the main server.",
-            "The response is extremely fast (often < 20ms).",
-            "The file is usually already compressed (gzip/brotli) and ready to go.",
-        ],
-        code: `# Speed comparison:
-
-# Cache HIT (Edge):
-Time: 15ms
-Server Load: 0% (Origin slept through this)
-
-# Cache MISS (Origin):
-Time: 250ms
-Server Load: Increased (Origin had to work)`,
-    },
-    {
-        title: "7. Cache MISS — Fetch from Origin",
-        phase: "Phase 3: Origin",
-        summary:
-            "If it's a MISS, the Edge Node acts as a messenger. It pauses your request, connects to the Origin server, and asks for the file on your behalf. This is called an 'Origin Pull'.",
-        technical: [
-            "The Edge Node connects to the Origin.",
-            "It passes your headers along (so the Origin knows who asked).",
-            "If 100 people request the same missing file at once, the CDN usually only sends ONE request to the Origin (Request Coalescing).",
-        ],
-        code: `# The conversation happens like this:
-
-# 1. User -> Edge:
-"Do you have logo.png?"
-
-# 2. Edge (doesn't have it) -> Origin:
-"Hey Origin, I need logo.png. A user is waiting."
-
-# 3. Origin -> Edge:
-"Here is logo.png."`,
-    },
-    {
-        title: "8. Edge Caches & Stores Response",
-        phase: "Phase 3: Origin",
-        summary:
-            "The Origin sends the file to the Edge Node. The Edge Node now saves a copy of this file in its local storage so it can serve the *next* user instantly. It looks at 'Cache-Control' headers to know how long to keep it.",
-        technical: [
-            "Cache-Control: max-age=3600 (Keep this for 1 hour).",
-            "If the header says 'no-store', the CDN won't save it (good for private data).",
-            "The file is stored on fast SSDs at the Edge.",
-        ],
-        code: `# Origin tells CDN how to behave:
-
-HTTP/1.1 200 OK
-Content-Type: image/png
-Cache-Control: public, max-age=3600
-
-# CDN thinks:
-# "Okay, I will save this 'logo.png' for 3600 seconds.
-# Anyone who asks for it in the next hour gets the local copy."`,
-    },
-    {
-        title: "9. Deliver to User",
+        title: "5. Caching & Delivery",
         phase: "Phase 4: Response",
-        summary:
-            "The Edge Node forwards the file to you. It travels over the optimized 'last mile' network to your device. You get your content, and the browser displays it.",
+        analogy: "The local branch hands you your item, and places a second copy on their shelf so the next person in your city gets it instantly.",
+        summary: "The Origin responds to the Edge Server. The Edge Server saves a copy to its local cache based on the provided HTTP headers, and simultaneously streams it to the user.",
         technical: [
-            "The connection uses modern protocols like HTTP/2 or HTTP/3 for speed.",
-            "Content is compressed (made smaller) to download faster.",
+            "Cache-Control Headers: The Origin dictates the caching rules (e.g., 'public, max-age=86400').",
+            "Streaming Response: The edge doesn't wait for the whole file to download from the origin; it streams the bytes to the client as they arrive.",
+            "Response Headers: The CDN injects diagnostic headers like 'X-Cache: HIT' or 'Cf-Cache-Status: MISS' for debugging."
         ],
-        code: `# Final delivery to your browser:
+        code: `HTTP/2 200 OK
+Content-Type: image/jpeg
+Cache-Control: public, max-age=31536000, immutable
+CF-Cache-Status: HIT       # Next time it will say HIT
+Age: 14023                 # Seconds it has been in edge cache
+Server: cloudflare
 
-HTTP/2 200 OK
-Content-Type: image/png
-Content-Length: 15000
-CF-Cache-Status: HIT  (or MISS, then HIT next time)
-
-# Browser: "Got it! Displaying image."`,
-    },
-    {
-        title: "10. Cache Invalidation (Cleaning Up)",
-        phase: "Phase 5: Management",
-        summary:
-            "What if you update the image on your server, but the CDN still has the old version cached for 1 hour? You need to 'Purge' the cache. This tells all Edge Nodes worldwide to delete their copy and fetch the new one next time.",
-        technical: [
-            "Purge by URL: Delete specific files.",
-            "Purge All: Delete everything (use carefully!).",
-            "Cache Busting: Changing the filename (logo-v2.png) forces the CDN to treat it as a new file.",
-        ],
-        code: `# How developers clear the cache:
-
-# 1. API Command (Purge):
-POST /purge_cache
-{ "files": ["https://site.com/logo.png"] }
-
-# CDN: "Deleting logo.png from all 300 data centers..."
-
-# 2. Next user request:
-# Result: Cache MISS (Fetches new logo from Origin)`,
-    },
+[... Binary Image Data ...]`
+    }
 ];

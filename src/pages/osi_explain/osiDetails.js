@@ -1,111 +1,128 @@
 export const OSI_STEP_DETAILS = [
     {
-        title: "1. Application Layer (Layer 7)",
-        phase: "Phase 1: Software",
-        summary:
-            "This is the layer you see and interact with. It's not the application itself (like Chrome), but the protocols the application uses to communicate (like HTTP). It's closest to the end user.",
+        title: "Layer 7: Application",
+        phase: "Host Layers (Software)",
+        analogy: "Writing a letter to your friend with a specific intent (like a greeting or a request).",
+        summary: "This is the layer closest to the end user. It provides network services directly to the user's applications, establishing the interface where human-computer interaction occurs.",
         technical: [
-            "Protocols: HTTP, HTTPS, FTP, SMTP, DNS.",
-            "User Interface interaction happens here.",
-            "PDU (Protocol Data Unit): Data.",
+            "Function: Network applications and API endpoints operate here.",
+            "Protocols: HTTP/HTTPS, FTP, SMTP, DNS, SSH.",
+            "Data Unit: Message / Data.",
+            "Note: The application itself (like Chrome) is not Layer 7; rather, the protocol Chrome uses (HTTP) resides here."
         ],
-        code: `// Browser sending an HTTP request
+        code: `// Layer 7 Example: HTTP Request
 GET /index.html HTTP/1.1
 Host: www.example.com
-User-Agent: Mozilla/5.0`,
+User-Agent: Mozilla/5.0
+Accept: application/json`
     },
     {
-        title: "2. Presentation Layer (Layer 6)",
-        phase: "Phase 1: Software",
-        summary:
-            "This layer translates data into a format the application can understand. It handles encryption (making data secure) and compression (making data smaller). It's the 'translator' of the network.",
+        title: "Layer 6: Presentation",
+        phase: "Host Layers (Software)",
+        analogy: "Translating the letter into a language your friend understands and putting it into a secure envelope.",
+        summary: "This layer formats, encrypts, and compresses the data so that it can be understood by the receiving system, regardless of the underlying hardware or operating system.",
         technical: [
-            "Data formatting (ASCII, EBCDIC, JSON).",
-            "Encryption/Decryption (SSL/TLS often conceptually lives here).",
-            "Compression/Decompression.",
+            "Function: Data translation, data compression, and encryption/decryption.",
+            "Protocols/Formats: SSL/TLS, JPEG, GIF, MPEG, ASCII, JSON serialization.",
+            "Data Unit: Message / Data.",
+            "Security: This is where TLS encryption is typically conceptually placed."
         ],
-        code: `// Data before Presentation:
-{ "message": "Hello" }
+        code: `// Layer 6 Example: JSON Serialization & Encryption
+const rawData = { user: "l0kesh", status: "active" };
 
-// Data after Encryption (Presentation):
-Encrypted: a8f5c2b9...`,
-    },
-    {
-        title: "3. Session Layer (Layer 5)",
-        phase: "Phase 1: Software",
-        summary:
-            "This layer acts like a session manager. It establishes, maintains, and terminates connections between applications. It ensures that different application data streams are kept separate.",
-        technical: [
-            "Session management (Authentication, Reconnection).",
-            "APIs, Sockets, WinSock.",
-            "Controls dialog control (simplex, half-duplex, full-duplex).",
-        ],
-        code: `// Session ID established
-Session-ID: 12345abcde
+// 1. Format (Serialize)
+const formatted = JSON.stringify(rawData);
 
-// Keep-Alive signals to maintain session`,
+// 2. Encrypt (TLS concept)
+const encrypted = encryptWithSessionKey(formatted);`
     },
     {
-        title: "4. Transport Layer (Layer 4)",
-        phase: "Phase 2: Transport",
-        summary:
-            "The 'Postman' of the model. It ensures data gets to the right place reliably. It breaks large data into smaller chunks called 'Segments' and handles error checking.",
+        title: "Layer 5: Session",
+        phase: "Host Layers (Software)",
+        analogy: "Calling your friend, agreeing to talk, and keeping the line open until the conversation is over.",
+        summary: "The Session layer establishes, manages, and terminates connections (sessions) between the local and remote applications.",
         technical: [
-            "Protocols: TCP (Reliable), UDP (Fast).",
-            "Segmentation: Breaking data into chunks.",
-            "Port Numbers: Addressing specific applications (e.g., Port 80 for Web).",
-            "PDU: Segment.",
+            "Function: Connection coordination, session checkpoints, and recovery.",
+            "Protocols: NetBIOS, PPTP, RPC, Sockets.",
+            "Data Unit: Message / Data.",
+            "Management: Uses checkpoints so that if a massive download fails halfway, it can resume from the last checkpoint."
         ],
-        code: `// TCP Segment Header
+        code: `# Layer 5 Example: OS level socket connection
+netstat -an
+
+# Output showing open sessions:
+# Proto  Local Address          Foreign Address        State
+# TCP    192.168.1.10:54321     104.21.34.12:443       ESTABLISHED`
+    },
+    {
+        title: "Layer 4: Transport",
+        phase: "Host Layers (Software)",
+        analogy: "Deciding whether to send the letter via Registered Mail (requires a signature, guaranteed delivery) or a Postcard (fast, but might get lost).",
+        summary: "This layer is responsible for end-to-end communication and error-free delivery of data. It dictates *how* much data is sent and at what rate.",
+        technical: [
+            "Function: Segmentation and reassembly, error checking, and multiplexing.",
+            "Protocols: TCP (Transmission Control Protocol - reliable), UDP (User Datagram Protocol - fast).",
+            "Data Unit: Segment (TCP) or Datagram (UDP).",
+            "Addressing: Uses Port Numbers (e.g., Port 80 for HTTP, 443 for HTTPS) to direct traffic to the right application."
+        ],
+        code: `// Layer 4 Example: TCP Segment Header Info
 Source Port: 54321
-Destination Port: 80
-Sequence Number: 1
-Ack Number: 0`,
+Destination Port: 443 (HTTPS)
+Sequence Number: 1000
+Acknowledgment Number: 2001
+Flags: [ACK, PSH]`
     },
     {
-        title: "5. Network Layer (Layer 3)",
-        phase: "Phase 3: Hardware",
-        summary:
-            "This layer handles logical addressing (IP addresses) and routing. It decides the best physical path for the data to reach its destination across different networks.",
+        title: "Layer 3: Network",
+        phase: "Media Layers (Hardware/OS)",
+        analogy: "The postal sorting facility reading the ZIP code to determine the best geographical route to the destination city.",
+        summary: "The Network layer determines the best physical path for the data to travel across multiple interconnected networks to reach its final destination.",
         technical: [
-            "Protocols: IP (IPv4, IPv6), ICMP.",
-            "Devices: Routers.",
-            "Logical Addressing (IP Addresses).",
-            "PDU: Packet.",
+            "Function: Logical addressing, routing, and path determination.",
+            "Protocols: IPv4, IPv6, ICMP, IPSec, OSPF, BGP.",
+            "Data Unit: Packet.",
+            "Addressing: Uses IP Addresses to route packets across routers over the global internet."
         ],
-        code: `// IP Packet Header
-Source IP: 192.168.1.5
-Dest IP: 172.217.16.14
-TTL: 64`,
+        code: `# Layer 3 Example: IP Packet Routing
+traceroute google.com
+
+# The router looks at the Destination IP (e.g., 142.250.190.46)
+# and checks its routing table to find the next hop.`
     },
     {
-        title: "6. Data Link Layer (Layer 2)",
-        phase: "Phase 3: Hardware",
-        summary:
-            "This layer handles physical addressing (MAC addresses). It ensures error-free transfer of data frames between two directly connected nodes (like your computer and your router).",
+        title: "Layer 2: Data Link",
+        phase: "Media Layers (Hardware/OS)",
+        analogy: "The local mail truck driver physically driving from the sorting facility to your specific house on the street.",
+        summary: "This layer facilitates node-to-node data transfer across a single physical network. It handles hardware addressing and local error detection.",
         technical: [
-            "Devices: Switches, Bridges.",
-            "Physical Addressing (MAC Addresses).",
-            "Error detection (FCS/CRC).",
-            "PDU: Frame.",
+            "Function: MAC addressing, local switching, and framing.",
+            "Protocols: Ethernet, Wi-Fi (802.11), MAC, ARP, VLANs.",
+            "Data Unit: Frame.",
+            "Addressing: Uses MAC Addresses (burned into the network interface card) to communicate within a local switch."
         ],
-        code: `// Ethernet Frame
-Dest MAC: 00:1A:2B:3C:4D:5E
-Source MAC: 00:5E:4D:3C:2B:1A
-EtherType: IPv4`,
+        code: `# Layer 2 Example: Checking local MAC address
+arp -a
+
+# Output maps IP to physical hardware MAC address:
+# Internet Address      Physical Address      Type
+# 192.168.1.1           a1-b2-c3-d4-e5-f6     dynamic`
     },
     {
-        title: "7. Physical Layer (Layer 1)",
-        phase: "Phase 3: Hardware",
-        summary:
-            "The actual physical hardware. Cables, fiber optics, radio waves. It transmits raw bits (1s and 0s) over the physical medium.",
+        title: "Layer 1: Physical",
+        phase: "Media Layers (Hardware/OS)",
+        analogy: "The actual roads, tires, and gasoline that allow the mail truck to physically move.",
+        summary: "The lowest layer is responsible for the actual physical connection between devices. It transmits raw, unstructured data over a physical medium.",
         technical: [
-            "Devices: Hubs, Cables (Cat6, Fiber), Network Cards (NIC).",
-            "Transmission of raw bits.",
-            "PDU: Bit.",
+            "Function: Transmission and reception of raw bit streams over a physical medium.",
+            "Hardware: Cables (Cat6, Fiber Optic), Hubs, Repeaters, Radio Frequencies.",
+            "Data Unit: Bit (1s and 0s).",
+            "Modulation: Converts bits into electrical voltages, light pulses, or wireless radio waves."
         ],
-        code: `// Physical Signal
-10101010 11001100 ...
-// (Represented as voltage levels or light pulses)`,
-    },
+        code: `// Layer 1 Example: Raw binary transmission
+// The Network Interface Card (NIC) converts digital data:
+01001000 01101001
+
+// Into physical signals:
+// Voltage: HIGH LOW LOW HIGH LOW LOW LOW HIGH ...`
+    }
 ];

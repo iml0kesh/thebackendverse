@@ -23,6 +23,7 @@ export const Home = () => {
       cdn: "/cdn",
       compiler: "/compiler",
       osi: "/osi",
+      oauth: "/oauth",
     };
     return routeMap[id] || "/";
   };

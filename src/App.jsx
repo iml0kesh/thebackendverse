@@ -12,6 +12,7 @@ import { UrlJourneyPage } from "./pages/url_explain/UrlJourneyPage";
 import { CdnJourneyPage } from "./pages/cdn_explain/CdnJourneyPage";
 import { CompilerJourneyPage } from "./pages/compiler_explain/CompilerJourneyPage";
 import { OsiJourneyPage } from "./pages/osi_explain/OsiJourneyPage";
+import { OauthJourneyPage } from "./pages/oauth_explain/OauthJourneyPage";
 
 import "./App.css";
 
@@ -63,6 +64,7 @@ export const App = () => {
           <Route path="/cdn" element={<CdnJourneyPage />} />
           <Route path="/compiler" element={<CompilerJourneyPage />} />
           <Route path="/osi" element={<OsiJourneyPage />} />
+          <Route path="/oauth" element={<OauthJourneyPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
 

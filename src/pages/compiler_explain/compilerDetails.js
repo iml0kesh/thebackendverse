@@ -1,206 +1,112 @@
 export const COMPILER_STEP_DETAILS = [
   {
-    title: "1. Source Code",
-    phase: "Phase 1: Frontend",
-    summary:
-      "You write code in a high-level language like JavaScript or C++. To you, it makes sense. To the computer, it's just a long string of text characters.",
+    title: "1. Lexical Analysis (Scanner)",
+    phase: "Front-End",
+    analogy: "Reading a paragraph and separating it into individual words, punctuation marks, and numbers.",
+    summary: "The compiler reads the raw source code character by character and groups them into meaningful sequences called 'Tokens'. It also strips out whitespaces and comments.",
     technical: [
-      "Stored as bytes (UTF-8) on your hard drive.",
-      "The compiler reads it one character at a time.",
-      "It has no structure yet—just a sequence of letters, numbers, and symbols.",
+      "Mechanism: Uses Finite Automata and Regular Expressions to recognize patterns.",
+      "Output: A stream of Tokens (Identifiers, Keywords, Operators, Literals).",
+      "Error Handling: Throws 'Lexical Errors' for illegal characters (e.g., a stray '@' symbol in C++).",
+      "Tools: Lex, Flex."
     ],
-    code: `// You write this:
-let x = 10 + 5;
+    code: `// Source Code:
+int result = a + 5;
 
-// The computer sees this:
-"l", "e", "t", " ", "x", " ", "=", " ", "1", "0", " ", "+", " ", "5", ";"`,
+// Output Stream of Tokens:
+[KEYWORD: "int"] 
+[IDENTIFIER: "result"] 
+[OPERATOR: "="] 
+[IDENTIFIER: "a"] 
+[OPERATOR: "+"] 
+[LITERAL_INT: "5"] 
+[PUNCTUATOR: ";"]`
   },
   {
-    title: "2. Lexer (The Scanner)",
-    phase: "Phase 1: Frontend",
-    summary:
-      "The Lexer reads the raw text and groups characters into words, known as 'Tokens'. It ignores whitespace and comments, focusing only on the meaningful parts.",
+    title: "2. Syntax Analysis (Parser)",
+    phase: "Front-End",
+    analogy: "Checking the grammatical structure to ensure the words form a valid sentence (Noun + Verb + Object).",
+    summary: "The parser takes the stream of tokens and checks them against the grammatical rules (context-free grammar) of the programming language. It builds a hierarchical structure called an Abstract Syntax Tree (AST).",
     technical: [
-      "Scans the code left-to-right.",
-      "Identifies keywords (let, if), identifiers (variable names), and operators (+, =).",
-      "Throws an error if it finds a character it doesn't recognize.",
+      "Mechanism: Uses Context-Free Grammars (CFG) and pushdown automata.",
+      "Output: Abstract Syntax Tree (AST).",
+      "Error Handling: Throws 'Syntax Errors' (e.g., missing semicolons, unmatched parentheses).",
+      "Tools: Yacc, Bison."
     ],
-    code: `// Input: "let x = 10;"
-
-// Lexer identifies:
-// "let" -> Keyword
-// "x"   -> Identifier
-// "="   -> Operator
-// "10"  -> Number
-// ";"   -> Punctuation`,
+    code: `// Resulting Abstract Syntax Tree (AST):
+      =
+     / \\
+result  +
+       / \\
+      a   5`
   },
   {
-    title: "3. Token Stream",
-    phase: "Phase 1: Frontend",
-    summary:
-      "The result of the Lexer is a flat list of tokens. This is a clean version of your code—no spaces, no comments, just the meaningful atoms of the language.",
+    title: "3. Semantic Analysis",
+    phase: "Front-End",
+    analogy: "Ensuring the grammatically correct sentence actually makes logical sense. (e.g., 'The rock ate a car' has good grammar, but bad semantics).",
+    summary: "The compiler checks the AST for semantic consistency. It ensures variables are declared before use, types are compatible, and function calls match their definitions.",
     technical: [
-      "A linear stream of objects.",
-      "Each token has a type (e.g., KEYWORD) and a value (e.g., 'let').",
-      "This stream is what the Parser will analyze next.",
+      "Mechanism: Traverses the AST and populates the Symbol Table (tracking scopes, types, and variable names).",
+      "Type Checking: Ensures you aren't trying to divide a String by a Boolean.",
+      "Output: Annotated / Decorated AST.",
+      "Error Handling: Throws 'Semantic Errors' (e.g., Type mismatch, undeclared variable)."
     ],
-    code: `[
-  { type: "KEYWORD", value: "let" },
-  { type: "IDENTIFIER", value: "x" },
-  { type: "OPERATOR", value: "=" },
-  { type: "NUMBER", value: "10" },
-  { type: "PUNCTUATION", value: ";" }
-]`,
+    code: `// Semantic check example:
+int a = "hello"; 
+
+// Semantic Analyzer Output:
+// ERROR: Incompatible types. 
+// Cannot assign 'String' to 'Integer'.`
   },
   {
-    title: "4. Parser (The Grammar Check)",
-    phase: "Phase 1: Frontend",
-    summary:
-      "The Parser takes the tokens and organizes them into a structure based on the language's grammar. It checks if your code follows the rules (syntax).",
+    title: "4. Intermediate Code Generation",
+    phase: "Middle-End",
+    analogy: "Translating the sentence into an intermediary, universal language (like Esperanto) before translating it into the final local dialect.",
+    summary: "The compiler translates the AST into a low-level, machine-independent representation. This makes it easier to optimize and allows the same front-end to target multiple CPU architectures.",
     technical: [
-      "Builds a hierarchical tree structure.",
-      "Ensures parentheses match and statements end correctly.",
-      "Throws 'Syntax Error' if the code structure is invalid.",
+      "Format: Often represented as Three-Address Code (TAC), where instructions have at most three operands.",
+      "Advantage: Decouples the programming language from the target machine architecture (e.g., LLVM IR).",
+      "Platform agnostic: The exact same IR can be handed to x86, ARM, or WebAssembly back-ends."
     ],
-    code: `// Input Tokens: "if", "(", "x", ")" ...
+    code: `// Source: result = a + b * c;
 
-// Parser checks rules:
-// Rule: IfStatement = "if" + "(" + Expression + ")" + Block
-
-// If you wrote "if x )", the parser explodes here because "(" is missing.`,
+// Three-Address Code (TAC) Output:
+t1 = b * c
+t2 = a + t1
+result = t2`
   },
   {
-    title: "5. Abstract Syntax Tree (AST)",
-    phase: "Phase 1: Frontend",
-    summary:
-      "The AST is a tree representing the logic of your program. It removes syntax details (like parentheses) and keeps the hierarchy. Tools like Prettier or ESLint work on this tree.",
+    title: "5. Code Optimization",
+    phase: "Middle-End",
+    analogy: "Editing the sentence to be as short and concise as possible without changing its original meaning.",
+    summary: "The compiler analyzes the intermediate code and applies transformations to make it execute faster or consume less memory.",
     technical: [
-      "Root node represents the file.",
-      "Child nodes represent functions, statements, and expressions.",
-      "This is the core data structure used by the compiler.",
+      "Techniques: Dead code elimination, constant folding, loop unrolling, and inline expansion.",
+      "Performance: This is what happens when you compile with the '-O3' flag.",
+      "Output: Optimized Intermediate Code."
     ],
-    code: `// Code: 5 + 3 * 2
-
-// AST Tree Structure:
-{
-  type: "BinaryExpression",
-  operator: "+",
-  left: 5,
-  right: {
-    type: "BinaryExpression",
-    operator: "*",
-    left: 3,
-    right: 2
-  }
-}
-// Note: 3 * 2 is grouped together because * has higher precedence than +.`,
-  },
-  {
-    title: "6. Semantic Analysis (Meaning)",
-    phase: "Phase 2: Middle End",
-    summary:
-      "The compiler checks if the code makes sense. Is 'x' defined? Are you trying to add a string to a number? This is where type errors and scope errors are caught.",
-    technical: [
-      "Scope checking: Verifies variables are declared before use.",
-      "Type checking: Ensures operations are valid for the data types.",
-      "This step adds extra information (types) to the AST.",
-    ],
-    code: `// Syntax is fine, but Semantics are wrong:
-
-const x = "hello";
-let y = x * 10; 
-// Error: Cannot multiply string by number.
-
-console.log(z);
-// Error: 'z' is not defined.`,
-  },
-  {
-    title: "7. Intermediate Representation (IR)",
-    phase: "Phase 2: Middle End",
-    summary:
-      "The compiler translates the AST into a simplified, generic language called IR. This allows the same compiler to support multiple languages (C++, Rust, Swift) and multiple CPUs (Intel, ARM).",
-    technical: [
-      "Generic code, not specific to any machine.",
-      "LLVM IR is the most famous example.",
-      "It looks like a simplified Assembly language.",
-    ],
-    code: `; LLVM IR Example
-%temp1 = mul i32 3, 2       ; 3 * 2
-%result = add i32 5, %temp1 ; 5 + result
-
-; This same IR can be compiled to run on your laptop or your phone.`,
-  },
-  {
-    title: "8. Optimizer",
-    phase: "Phase 2: Middle End",
-    summary:
-      "The optimizer analyzes the IR to make it faster and smaller without changing what the program does. It removes useless code, pre-calculates math, and simplifies logic.",
-    technical: [
-      "Constant Folding: '5 + 3' becomes '8' at compile time.",
-      "Dead Code Elimination: Removes code that never runs.",
-      "Inlining: Replaces function calls with the function body to save time.",
-    ],
-    code: `// Before Optimization:
-function test() {
-  let a = 10 + 20;
-  return a;
-  console.log("Unreachable"); // Dead code
-}
+    code: `// Before Optimization (Constant Folding):
+int x = 10 * 5;
+int y = x + 1;
 
 // After Optimization:
-function test() {
-  return 30; // Calculated 10+20 and removed dead code
-}`,
+// The compiler does the math at compile-time!
+int x = 50;
+int y = 51;`
   },
   {
-    title: "9. Code Generation",
-    phase: "Phase 3: Backend",
-    summary:
-      "The compiler translates the optimized IR into specific instructions for your target CPU (like x86 for PCs or ARM for phones).",
+    title: "6. Target Code Generation",
+    phase: "Back-End",
+    analogy: "Translating the finalized, optimized sentence into the exact native dialect spoken by the specific listener.",
+    summary: "The optimized intermediate code is translated into the specific machine code or assembly language of the target CPU architecture (like x86-64 or ARM).",
     technical: [
-      "Maps generic operations to specific CPU instructions.",
-      "Allocates CPU registers (fast memory) for variables.",
-      "This is where the code becomes specific to your hardware.",
+      "Register Allocation: Deciding which variables will live in the CPU's limited, ultra-fast hardware registers.",
+      "Instruction Selection: Picking the most efficient CPU-specific instructions to accomplish tasks.",
+      "Output: Assembly Code or Relocatable Object/Binary code (.o / .obj files), ready for the Linker."
     ],
-    code: `// IR: add 5, 3
-
-// x86 (Intel) Generation:
-ADD EAX, 3
-
-// ARM (Apple Silicon) Generation:
-ADD W0, W0, #3`,
-  },
-  {
-    title: "10. Assembly",
-    phase: "Phase 3: Backend",
-    summary:
-      "Assembly is the text representation of machine code. It's the last step where code is still readable by humans (barely). Each line corresponds to one CPU instruction.",
-    technical: [
-      "1-to-1 mapping with machine code.",
-      "Uses mnemonics like MOV (move), ADD (add), RET (return).",
-      "Specific to the architecture (x86 vs ARM).",
-    ],
-    code: `_main:
-  mov eax, 5      ; Load 5 into register eax
-  add eax, 3      ; Add 3 to eax
-  ret             ; Return`,
-  },
-  {
-    title: "11. Machine Code",
-    phase: "Phase 3: Backend",
-    summary:
-      "The final output. Pure binary numbers that the CPU executes. This is your .exe or executable file. The CPU reads these bytes and performs the operations.",
-    technical: [
-      "Binary instructions (1s and 0s).",
-      "Executed directly by hardware.",
-      "Not human readable.",
-    ],
-    code: `// Hex representation of instructions:
-B8 05 00 00 00  // MOV EAX, 5
-83 C0 03        // ADD EAX, 3
-C3              // RET
-
-// The CPU sees:
-// 10111000 00000101 ...`,
-  },
+    code: `; Translated to x86 Assembly
+mov eax, DWORD PTR [a]    ; Load 'a' into register
+add eax, 5                ; Add 5 to register
+mov DWORD PTR [result], eax ; Store result`
+  }
 ];
