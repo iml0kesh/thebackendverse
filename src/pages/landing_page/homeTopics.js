@@ -63,7 +63,7 @@ export const TOPICS = [
     desc: "Authorization codes, access tokens, refresh tokens — the complete flow.",
     steps: 10,
     time: "~8 min",
-    available: false,
+    available: true,
   },
   {
     id: "compiler",
@@ -83,9 +83,9 @@ export const TOPICS = [
     tagColor: "#118ab2",
     title: "How Docker containers are isolated from each other",
     desc: "Namespaces, cgroups, and the Linux kernel magic behind containers.",
-    steps: 9,
+    steps: 8,
     time: "~7 min",
-    available: false,
+    available: true,
   },
   {
     id: "redis",

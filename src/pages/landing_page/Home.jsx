@@ -24,6 +24,7 @@ export const Home = () => {
       compiler: "/compiler",
       osi: "/osi",
       oauth: "/oauth",
+      docker: "/docker",
     };
     return routeMap[id] || "/";
   };
