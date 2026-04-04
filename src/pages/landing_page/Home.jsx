@@ -58,7 +58,7 @@ export const Home = () => {
             Start with URL Journey →
           </button>
           <div className="home-hero-stats">
-            <div className="hero-stat">
+            {/* <div className="hero-stat">
               <span className="hero-stat-num">9</span>
               <span className="hero-stat-label">Topics</span>
             </div>
@@ -66,7 +66,7 @@ export const Home = () => {
             <div className="hero-stat">
               <span className="hero-stat-num">5</span>
               <span className="hero-stat-label">Categories</span>
-            </div>
+            </div> */}
             {/* <div className="hero-stat-divider" />
             <div className="hero-stat">
               <span className="hero-stat-num">100%</span>
@@ -79,7 +79,7 @@ export const Home = () => {
       <section className="home-topics">
         <div className="home-topics-header">
           <h2 className="home-section-title">Explore Topics</h2>
-          <p className="home-topics-count">{filtered.length} topics</p>
+          {/* <p className="home-topics-count">{filtered.length} topics</p> */}
         </div>
         <div className="home-filter-tabs">
           {CATEGORIES.map((cat) => (
@@ -183,7 +183,7 @@ export const Home = () => {
             <button className="home-cta-btn" onClick={() => navigate("/url")}>
               Start URL Journey →
             </button>
-            <p className="home-cta-note">No account needed · 100% free</p>
+            {/* <p className="home-cta-note">No account needed · 100% free</p> */}
           </div>
         </div>
       </section>

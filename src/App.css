@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap");
-@import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@300,400,500,700,800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap");
 
 *,
 *::before,
@@ -33,7 +33,7 @@
   --accent3: #118ab2;
   --mono: "JetBrains Mono", monospace;
   --display: "Outfit", sans-serif;
-  --body: "Cabinet Grotesk", sans-serif;
+  --body: "Inter", sans-serif;
 }
 
 html {

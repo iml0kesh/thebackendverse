@@ -71,7 +71,7 @@ export const App = () => {
         </Routes>
 
         <footer className="site-footer">
-          <p>Built to demystify the backend · thebackendverse</p>
+          <p>@iaml0kesh · thebackendverse</p>
         </footer>
       </div>
     </HelmetProvider>
