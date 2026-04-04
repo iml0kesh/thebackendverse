@@ -7,7 +7,7 @@ export const CodeBlock = ({ code, language }) => {
         color: "#e2e8f0",
         padding: "16px",
         borderRadius: "8px",
-        fontFamily: "'Fira Code', 'Courier New', Courier, monospace",
+        fontFamily: "var(--mono)",
         fontSize: "0.85rem",
         overflowX: "auto",
         marginTop: "12px",

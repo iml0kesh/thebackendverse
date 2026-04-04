@@ -5,6 +5,15 @@
   display: flex;
   flex-direction: column;
   gap: 40px;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  line-height: 1.6;
 }
 
 .docker-workspace {
@@ -25,7 +34,7 @@
 }
 
 .vis-title {
-  font-size: 0.9rem;
+  font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-secondary);
@@ -35,7 +44,7 @@
 }
 
 .vis-subtitle {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: #636e72;
   margin-bottom: 24px;
 }
@@ -74,8 +83,8 @@
   color: #dfe6e9;
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.8rem;
-  font-family: monospace;
+  font-size: 0.9rem;
+  font-family: Consolas, Monaco, "Courier New", Courier, monospace;
   border: 1px solid #636e72;
   transition: all 0.3s ease;
 }
@@ -87,7 +96,7 @@
   border: 1px dashed #636e72;
 }
 .layer-label {
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: #636e72;
   font-weight: bold;
   display: block;
@@ -124,8 +133,8 @@
   padding: 0 16px;
   z-index: 2;
   color: #636e72;
-  font-size: 0.8rem;
-  font-family: monospace;
+  font-size: 0.9rem;
+  font-family: Consolas, Monaco, "Courier New", Courier, monospace;
   font-weight: bold;
   letter-spacing: 0.05em;
   transition: all 0.5s ease;
@@ -149,7 +158,7 @@
 .docker-layer-header {
   color: #2496ed;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   margin-bottom: 16px;
 }
 
@@ -172,7 +181,7 @@
 
 .app-container h5 {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: #fff;
   display: flex;
   justify-content: space-between;
@@ -191,8 +200,8 @@
   background: rgba(0, 0, 0, 0.3);
   padding: 6px;
   border-radius: 4px;
-  font-family: monospace;
-  font-size: 0.7rem;
+  font-family: Consolas, Monaco, "Courier New", Courier, monospace;
+  font-size: 0.85rem;
   color: #b2bec3;
   display: flex;
   align-items: center;
@@ -203,7 +212,7 @@
 }
 
 .stat-icon {
-  font-size: 0.7rem;
+  font-size: 0.85rem;
 }
 
 /* Container Feature Active States */
@@ -301,7 +310,7 @@
 }
 
 .control-title {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -315,7 +324,7 @@
 
 .control-details p {
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 12px;
 }
@@ -332,8 +341,8 @@
   border: 1px solid #636e72;
   border-radius: 20px;
   padding: 6px 12px;
-  font-size: 0.75rem;
-  font-family: monospace;
+  font-size: 0.9rem;
+  font-family: Consolas, Monaco, "Courier New", Courier, monospace;
   color: #dfe6e9;
   text-align: center;
 }
@@ -344,7 +353,18 @@
   border-radius: 8px;
   padding: 10px;
   text-align: center;
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: #2496ed;
   font-weight: 600;
+}
+
+/* --- RESPONSIVENESS --- */
+@media (max-width: 900px) {
+  .docker-workspace {
+    grid-template-columns: 1fr;
+  }
+  .docker-visualizer {
+    position: relative;
+    top: 0;
+  }
 }

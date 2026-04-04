@@ -5,402 +5,345 @@ const LAYERS = [
     id: "pid",
     icon: "🪪",
     color: "#a29bfe",
-    title: "PID Namespace",
-    tag: "Process Isolation",
-    simple: "The container can't see other programs running on your computer.",
-    analogy: "Imagine you're in a room with blacked-out windows. You can't see what's happening outside. Other programs on the host are invisible to the container — it thinks it's the only thing running.",
-    howItWorks: "Every program running on a computer gets a Process ID (PID) — just a number. Normally, everything shares the same list. With a PID namespace, the container gets its own private list. It starts counting from 1, like a fresh computer.",
-    realWorld: "Your nginx inside the container sees itself as PID 1. On the host machine, it's actually PID 14328. Same process — two different views.",
-    code: `# Inside the container — it only sees itself
-$ ps
-PID  COMMAND
-  1  nginx        ← thinks it's the only process!
-
-# On your actual computer
-$ ps
-PID    COMMAND
-  1    systemd
-  981  sshd
-14328  nginx       ← same nginx, different number`,
-    before: "nginx is PID 14328",
-    after: "nginx sees itself as PID 1",
+    name: "PID Namespace",
+    question: "Can containers see each other's processes?",
+    withoutProblem: "Without this, every container can see and even kill every other process on your computer. Total chaos.",
+    withSolution: "Each container now has its own process list. nginx thinks it's PID 1 — the only process alive. It can't see node, redis, or anything on your host.",
+    command: "docker run --pid=host nginx  # dangerous: shares host processes",
   },
   {
     id: "mount",
     icon: "📂",
     color: "#fd79a8",
-    title: "Mount Namespace",
-    tag: "Filesystem Isolation",
-    simple: "The container has its own hard drive. It can't see or touch your files.",
-    analogy: "Think of it like a hotel room. You get a clean room with everything you need. The rest of the hotel (your host computer's files) is behind a locked door you can't open.",
-    howItWorks: "Docker takes the image (like a snapshot of an OS with your app) and mounts it as the container's entire filesystem. The container sees /bin, /etc, /home — but these are all from the image, not your real computer. Your actual files are completely hidden.",
-    realWorld: "This is why 'docker run ubuntu' gives you a full Ubuntu environment even if you're on macOS. The Ubuntu files come from the image, layered on top of your real OS.",
-    code: `# Inside the container — sees a full Linux OS
-$ ls /
-bin  etc  home  lib  usr  var ...
-# These are from the nginx IMAGE, not your computer!
-
-# Your real computer's files? Invisible.
-# /home/yourname? Doesn't exist inside.
-# /etc/passwd on host? Different file inside.
-
-# Want to share a folder? You explicitly allow it:
-$ docker run -v /my/folder:/app nginx
-#              ↑ host path  ↑ container path`,
-    before: "/ → your computer's real files",
-    after: "/ → private copy from the image",
+    name: "Mount Namespace",
+    question: "Can containers read your files?",
+    withoutProblem: "Without this, the container shares your real hard drive. It can read your code, your SSH keys, everything.",
+    withSolution: "Each container gets its own private filesystem from the image. Your files are completely invisible inside.",
+    command: "docker run -v ./myfiles:/app nginx  # only share what you choose",
   },
   {
     id: "net",
     icon: "🌐",
     color: "#00b894",
-    title: "Network Namespace",
-    tag: "Network Isolation",
-    simple: "The container gets its own private network, like its own little internet.",
-    analogy: "Like moving into a house with its own address. Your house (container) gets a new street address (IP). The outside world can only reach you through the front door (port mapping) — not through your walls.",
-    howItWorks: "Docker gives the container its own virtual network card with its own IP address (like 172.17.0.2). It can't see your Wi-Fi or your other network connections. To talk to the outside world, traffic goes through Docker's virtual bridge — like a router.",
-    realWorld: "When you do -p 8080:80, you're telling Docker: 'if anyone knocks on my door at port 8080, forward it to the container's port 80.' That's all port mapping is.",
-    code: `# Inside the container — its own network
-$ ip addr
-eth0: 172.17.0.2    ← container's private IP
-
-# Your computer still has its own IP
-# The container can't see your Wi-Fi card at all
-
-# Port mapping explained simply:
-$ docker run -p 8080:80 nginx
-#   Your port 8080 → Container port 80
-#   Like call forwarding on a phone`,
-    before: "shares your computer's network",
-    after: "172.17.0.2 — its own private IP",
+    name: "Network Namespace",
+    question: "Are containers sharing your WiFi?",
+    withoutProblem: "Without this, all containers share your network. Port conflicts everywhere — two apps can't both use port 80.",
+    withSolution: "Each container gets its own private IP. nginx gets 172.17.0.2, node gets 172.17.0.3. No conflicts ever.",
+    command: "docker run -p 8080:80 nginx  # map host:8080 → container:80",
   },
   {
     id: "cgroups",
     icon: "⚖️",
-    color: "#0984e3",
-    title: "Control Groups (cgroups)",
-    tag: "Resource Limits",
-    simple: "You set a budget. The container can't use more RAM or CPU than you allow.",
-    analogy: "Like giving someone a prepaid card with $50. They can spend freely — but the moment they hit $50, it stops. They can't accidentally drain your bank account.",
-    howItWorks: "Without limits, one container could use all your RAM and crash everything else. Cgroups let the Linux kernel enforce hard limits. Set 512MB — if the container tries to use 513MB, the kernel kills it immediately.",
-    realWorld: "This is what keeps your laptop alive when running 5 containers. Each one has a budget. One container going wild doesn't affect the others.",
-    code: `# Give the container a memory budget
-$ docker run --memory="512m" nginx
-
-# Give it a CPU budget (1.5 cores max)
-$ docker run --cpus="1.5" nginx
-
-# See live usage
-$ docker stats
-CONTAINER   CPU     MEMORY
-nginx       0.1%    18MB / 512MB limit
-node-app    12%     200MB / 512MB limit
-
-# Hit the limit → container gets killed
-# OOMKilled: true  (Out Of Memory)`,
-    before: "can use ALL your RAM if it wants",
-    after: "hard limit: 512 MB max",
+    color: "#fdcb6e",
+    name: "cgroups",
+    question: "Can one container crash everything?",
+    withoutProblem: "Without this, one leaky container eats all your RAM and takes down every other container and your host.",
+    withSolution: "Each container has a hard resource budget. Hit the limit → that container dies. Everything else stays alive.",
+    command: "docker run --memory=512m --cpus=1 nginx",
   },
   {
     id: "seccomp",
     icon: "🛡️",
-    color: "#d63031",
-    title: "Seccomp + Capabilities",
-    tag: "Security Layer",
-    simple: "Even if a hacker gets inside the container, they can't break out to your computer.",
-    analogy: "Like a maximum security prison. Even if an inmate escapes their cell, the building still has walls, guards, and locked doors. The container runs as 'root' — but it's a root with its dangerous powers removed.",
-    howItWorks: "Linux 'root' is normally all-powerful. Docker takes those powers and splits them up, then removes the dangerous ones. Can't change the system clock. Can't load kernel modules. Can't mount fake disks. On top of that, 44 dangerous system calls are completely blocked by default.",
-    realWorld: "This is why Docker containers are much safer than just running code directly. Even 'docker run --rm evil-image' can't easily escape and damage your host system.",
-    code: `# Container runs as root BUT with limited powers
-# These dangerous abilities are REMOVED:
-
-# ❌ Can't change your computer's clock
-$ date -s "1 Jan 2030"
-Operation not permitted
-
-# ❌ Can't load kernel modules (hardware drivers)
-$ insmod evil.ko
-Operation not permitted
-
-# ❌ Can't reboot your computer
-$ reboot
-Operation not permitted
-
-# The kernel blocks these before they even run`,
-    before: "root = unlimited power",
-    after: "root = safe, limited powers only",
+    color: "#e17055",
+    name: "Seccomp",
+    question: "Can a hacker escape the container?",
+    withoutProblem: "Without this, code running inside could make dangerous Linux system calls — reboot your machine, load kernel modules, read hardware.",
+    withSolution: "44 dangerous system calls are blocked. Even if someone runs malicious code inside, they can't escape to your host.",
+    command: "docker run --security-opt seccomp=default.json nginx",
   },
 ];
 
-const CONTAINERS = [
-  { name: "nginx",  pid: "14328", ip: "172.17.0.2", mem: "18 MB" },
-  { name: "node",   pid: "14329", ip: "172.17.0.3", mem: "64 MB" },
-  { name: "redis",  pid: "14330", ip: "172.17.0.4", mem: "8 MB"  },
+const APPS = [
+  { name: "nginx",  icon: "🌐", pid: "14201", ip: "172.17.0.2", port: "80",   color: "#00b894" },
+  { name: "node",   icon: "🟢", pid: "14308", ip: "172.17.0.3", port: "3000", color: "#fdcb6e" },
+  { name: "redis",  icon: "🔴", pid: "14412", ip: "172.17.0.4", port: "6379", color: "#e17055" },
 ];
 
-const layerOrder = LAYERS.map(l => l.id);
-
-const ContainerBox = ({ container, appliedLayers, activeColor }) => {
-  const has = (id) => appliedLayers.includes(id);
-  return (
-    <div
-      className="dk-container-box"
-      style={{ "--dk-color": appliedLayers.length ? activeColor || "var(--accent2)" : "var(--border2)" }}
-    >
-      <div className="dk-cbox-header">
-        <span>📦</span>
-        <span className="dk-cbox-name">{container.name}</span>
-      </div>
-      <div className="dk-cbox-rows">
-        <div className={`dk-cbox-row ${has("pid") ? "dk-row-lit" : ""}`}>
-          <span>🪪</span>
-          <span>{has("pid") ? "PID: 1" : `PID: ${container.pid}`}</span>
-        </div>
-        <div className={`dk-cbox-row ${has("mount") ? "dk-row-lit" : ""}`}>
-          <span>📂</span>
-          <span>{has("mount") ? "/ private" : "/ host"}</span>
-        </div>
-        <div className={`dk-cbox-row ${has("net") ? "dk-row-lit" : ""}`}>
-          <span>🌐</span>
-          <span>{has("net") ? container.ip : "shared"}</span>
-        </div>
-        <div className={`dk-cbox-row ${has("cgroups") ? "dk-row-lit" : ""}`}>
-          <span>⚖️</span>
-          <span>{has("cgroups") ? "512MB max" : "unlimited"}</span>
-        </div>
-        <div className={`dk-cbox-row ${has("seccomp") ? "dk-row-lit" : ""}`}>
-          <span>🛡️</span>
-          <span>{has("seccomp") ? "secured" : "open"}</span>
-        </div>
-      </div>
-    </div>
-  );
-};
+const CONCEPTS = [
+  {
+    icon: "📦",
+    term: "What is a Container?",
+    simple: "A box your app runs inside.",
+    explain: "Imagine you built an app on your laptop. It works perfectly. But when you send it to your friend, it crashes — because they have a different version of Node.js, different files, different settings. A container solves this by packaging your app together with everything it needs to run. Same box, anywhere.",
+    analogy: "🚢 Like a shipping container. The same box that works on a truck also works on a ship and a train — it doesn't care what's carrying it.",
+  },
+  {
+    icon: "🖼️",
+    term: "What is an Image?",
+    simple: "The recipe used to create a container.",
+    explain: "An image is a snapshot — a read-only template that says 'this container should have Ubuntu, Node.js 20, and my app files'. When you run an image, Docker creates a container from it. You can run the same image 100 times and get 100 identical containers.",
+    analogy: "🍪 Like a cookie cutter. The cutter (image) stays the same. Each cookie (container) is a fresh copy you can do whatever you want with.",
+  },
+  {
+    icon: "🐳",
+    term: "What is Docker?",
+    simple: "The tool that creates and manages containers.",
+    explain: "Docker is the software that makes containers work. You tell it 'run this image' and it handles everything — creating the container, setting up the isolated environment, starting your app. Without Docker, you'd have to do all of this manually with dozens of Linux commands.",
+    analogy: "🏭 Like a factory. You give it a blueprint (image) and it builds and runs the product (container) for you.",
+  },
+  {
+    icon: "🆚",
+    term: "Container vs Virtual Machine",
+    simple: "Containers share the OS. VMs bring their own.",
+    explain: "A Virtual Machine is a full fake computer — it has its own operating system, taking up gigabytes of RAM just to boot. A container is much lighter — it shares your computer's OS but stays isolated using Linux tricks. That's why you can run 50 containers but maybe only 3 VMs on the same machine.",
+    analogy: "🏠 A VM is buying a whole house. A container is renting a room — shared walls, but your own private space.",
+  },
+];
 
 export const DockerJourneyPage = () => {
-  const [activeId, setActiveId] = useState(null);
-  const [applied, setApplied] = useState([]);
+  const [walls, setWalls] = useState([]);
+  const [focused, setFocused] = useState(null);
+  const [expandedConcept, setExpandedConcept] = useState(null);
 
-  const activeLayer = LAYERS.find(l => l.id === activeId);
+  const hasWall = (id) => walls.includes(id);
 
-  const handleClick = (id) => {
-    if (activeId === id) {
-      setActiveId(null);
-      return;
+  const toggleWall = (id) => {
+    setFocused(id);
+    if (hasWall(id)) {
+      setWalls(walls.filter(w => w !== id));
+    } else {
+      setWalls([...walls, id]);
     }
-    setActiveId(id);
-    const idx = layerOrder.indexOf(id);
-    setApplied(layerOrder.slice(0, idx + 1));
   };
 
+  const focusedLayer = LAYERS.find(l => l.id === focused);
+  const allApplied = walls.length === LAYERS.length;
+
   return (
-    <main>
-      {/* HERO */}
+    <main className="docker-lab">
+
+      {/* ── HERO ── */}
       <section className="hero">
-        <div className="hero-breadcrumb">
-          <span className="breadcrumb-dot" />
-          Infrastructure
-        </div>
-        <h1>How Docker Keeps Containers <span style={{ color: "var(--accent)" }}>Isolated</span></h1>
-        <p>
-          A container is not a tiny computer. It's your app with invisible walls around it —
-          built from 5 Linux tricks. Click each one to understand it simply.
-        </p>
+        <div className="hero-breadcrumb"><span className="breadcrumb-dot" />Infrastructure</div>
+        <h1>How Docker Containers<br /><span style={{ color: "var(--accent)" }}>Are Isolated</span></h1>
+        <p>Start from zero — what is Docker, what is a container, and how does Linux keep them separated from each other. All explained simply.</p>
         <div className="hero-actions">
           <div className="hero-chips">
-            {["Beginner Friendly", "Interactive", "No Jargon"].map(c => (
+            {["Beginner Friendly", "Interactive Lab", "No Prior Knowledge Needed"].map(c => (
               <span key={c} className="hero-chip">{c}</span>
             ))}
           </div>
         </div>
       </section>
 
-      {/* STATS */}
-      <div className="stats-banner" style={{ marginBottom: "48px" }}>
-        {[
-          { v: "5",    l: "Isolation tricks",    c: "#a29bfe" },
-          { v: "0",    l: "Extra OS needed",      c: "#06d6a0" },
-          { v: "<1%",  l: "Performance overhead", c: "#ff6b35" },
-          { v: "🐳",   l: "Just Linux, cleverly", c: "#ffd166" },
-        ].map(s => (
-          <div key={s.l}>
-            <span style={{ color: s.c, fontFamily: "var(--display)", fontSize: "28px", fontWeight: 700 }}>{s.v}</span>
-            <span>{s.l}</span>
+      {/* ── SECTION 1: CORE CONCEPTS ── */}
+      <div className="dlab-section">
+        <div className="dlab-section-header">
+          <span className="dlab-section-num">01</span>
+          <div>
+            <h2 className="dlab-section-title">The Basics — What Are We Even Talking About?</h2>
+            <p className="dlab-section-sub">Before the interactive part, make sure you understand these four ideas. Click any card to expand it.</p>
           </div>
-        ))}
-      </div>
+        </div>
 
-      {/* WORKSPACE */}
-      <div className="dk-workspace">
-
-        {/* LEFT: layer cards */}
-        <div className="dk-layers-col">
-          <p className="dk-col-label">Click each layer to learn what it does</p>
-
-          {LAYERS.map((layer) => {
-            const isActive = activeId === layer.id;
-            const isApplied = applied.includes(layer.id);
+        <div className="dlab-concepts">
+          {CONCEPTS.map((c, i) => {
+            const isOpen = expandedConcept === i;
             return (
               <button
-                key={layer.id}
-                className={`dk-layer-card ${isActive ? "dk-layer-selected" : ""} ${isApplied && !isActive ? "dk-layer-applied" : ""}`}
-                style={{ "--dk-color": layer.color }}
-                onClick={() => handleClick(layer.id)}
+                key={i}
+                className={`dlab-concept-card ${isOpen ? "dlab-concept-open" : ""}`}
+                onClick={() => setExpandedConcept(isOpen ? null : i)}
               >
-                <div className="dk-layer-top">
-                  <span className="dk-layer-icon">{layer.icon}</span>
-                  <div className="dk-layer-meta">
-                    <span className="dk-layer-title">{layer.title}</span>
-                    <span className="dk-layer-tag">{layer.simple}</span>
+                <div className="dlab-concept-top">
+                  <span className="dlab-concept-icon">{c.icon}</span>
+                  <div className="dlab-concept-text">
+                    <span className="dlab-concept-term">{c.term}</span>
+                    <span className="dlab-concept-simple">{c.simple}</span>
                   </div>
-                  <span className={`dk-layer-dot ${isApplied ? "dk-dot-on" : ""}`} />
+                  <span className="dlab-concept-chevron">{isOpen ? "▲" : "▼"}</span>
                 </div>
-
-                {isActive && (
-                  <div className="dk-layer-body">
-
-                    {/* Analogy first — always */}
-                    <div className="dk-analogy">
-                      <span className="dk-analogy-label">💡 Think of it like this</span>
-                      <p>{layer.analogy}</p>
+                {isOpen && (
+                  <div className="dlab-concept-body">
+                    <p className="dlab-concept-explain">{c.explain}</p>
+                    <div className="dlab-concept-analogy">
+                      <span className="dlab-analogy-label">Analogy</span>
+                      <span>{c.analogy}</span>
                     </div>
-
-                    {/* How it actually works */}
-                    <div className="dk-how">
-                      <span className="dk-section-label">⚙️ How it actually works</span>
-                      <p>{layer.howItWorks}</p>
-                    </div>
-
-                    {/* Real world */}
-                    <div className="dk-realworld">
-                      <span className="dk-section-label">🌍 Real example</span>
-                      <p>{layer.realWorld}</p>
-                    </div>
-
-                    {/* Before / after */}
-                    <div className="dk-before-after">
-                      <div className="dk-ba-item">
-                        <span className="dk-ba-label">Without this layer</span>
-                        <span className="dk-ba-val dk-ba-before">{layer.before}</span>
-                      </div>
-                      <span className="dk-ba-arrow">→</span>
-                      <div className="dk-ba-item">
-                        <span className="dk-ba-label">With this layer</span>
-                        <span className="dk-ba-val dk-ba-after" style={{ color: layer.color }}>{layer.after}</span>
-                      </div>
-                    </div>
-
-                    {/* Code — last, optional to read */}
-                    <details className="dk-code-details">
-                      <summary>Show me the terminal commands</summary>
-                      <pre className="dk-code">{layer.code}</pre>
-                    </details>
-
                   </div>
                 )}
               </button>
             );
           })}
+        </div>
+      </div>
 
-          {applied.length > 0 && (
-            <button className="dk-reset" onClick={() => { setApplied([]); setActiveId(null); }}>
-              ↺ Reset
-            </button>
-          )}
+      {/* ── SECTION 2: HOW ISOLATION WORKS ── */}
+      <div className="dlab-section">
+        <div className="dlab-section-header">
+          <span className="dlab-section-num">02</span>
+          <div>
+            <h2 className="dlab-section-title">How Does Isolation Actually Work?</h2>
+            <p className="dlab-section-sub">A container is not magic. It's just your app running as a normal Linux process — but with five invisible walls built around it using features already in the Linux kernel.</p>
+          </div>
         </div>
 
-        {/* RIGHT: live diagram */}
-        <div className="dk-diagram-col">
-          <p className="dk-col-label">Watch the container change as you apply layers</p>
-
-          <div className="dk-host">
-            <div className="dk-host-label">🖥️ Your Computer (Linux Host)</div>
-
-            <div className="dk-host-procs">
-              <span className="dk-proc-pill">systemd</span>
-              <span className="dk-proc-pill">sshd</span>
-              <span className="dk-proc-pill">postgres</span>
-              {applied.length > 0 && (
-                <span className="dk-proc-pill" style={{ color: "var(--muted)", borderStyle: "dashed" }}>
-                  nginx (hidden from containers 👻)
-                </span>
-              )}
+        <div className="dlab-isolation-intro">
+          <div className="dlab-iso-card">
+            <span className="dlab-iso-icon">🧠</span>
+            <div>
+              <div className="dlab-iso-title">The key insight</div>
+              <div className="dlab-iso-text">Docker doesn't create a fake computer. It takes your app, runs it as a normal process, and then uses 5 Linux kernel features to make that process think it's alone — with its own files, its own network, its own process list.</div>
             </div>
-
-            <div className="dk-engine-band">
-              🐳 Docker Engine
+          </div>
+          <div className="dlab-iso-card">
+            <span className="dlab-iso-icon">⚡</span>
+            <div>
+              <div className="dlab-iso-title">Why this is fast</div>
+              <div className="dlab-iso-text">Because there's no fake OS booting up. The container starts in milliseconds. It uses the same Linux kernel as your host — just in an isolated environment.</div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            {applied.length > 0 && (
-              <div className="dk-wall">
-                <div className="dk-wall-label">isolation walls applied so far</div>
-                <div className="dk-wall-layers">
-                  {applied.map(id => {
-                    const l = LAYERS.find(x => x.id === id);
-                    return (
-                      <span
-                        key={id}
-                        className={`dk-wall-chip ${activeId === id ? "dk-wall-chip-active" : ""}`}
-                        style={{ "--dk-color": l.color }}
-                      >
-                        {l.icon} {l.title}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+      {/* ── SECTION 3: INTERACTIVE LAB ── */}
+      <div className="dlab-section">
+        <div className="dlab-section-header">
+          <span className="dlab-section-num">03</span>
+          <div>
+            <h2 className="dlab-section-title">The Interactive Lab</h2>
+            <p className="dlab-section-sub">Below are 3 containers running completely unprotected. Apply isolation walls one by one and watch each container change from dangerous → safe.</p>
+          </div>
+        </div>
 
-            <div className="dk-containers-row">
-              {CONTAINERS.map(c => (
-                <ContainerBox
-                  key={c.name}
-                  container={c}
-                  appliedLayers={applied}
-                  activeColor={activeLayer?.color}
-                />
-              ))}
-            </div>
-
-            {applied.length === 0 && (
-              <div className="dk-diagram-hint">
-                👆 Click a layer on the left to start
-              </div>
-            )}
+        {/* THE MACHINE */}
+        <div className="dlab-machine">
+          <div className="dlab-machine-label">
+            <span>🖥️ Linux Host Machine</span>
+            <span className="dlab-machine-sub">
+              {walls.length === 0 ? "⚠️ No isolation — containers wide open" :
+               allApplied ? "✅ Fully isolated" :
+               `${walls.length} / 5 walls applied`}
+            </span>
           </div>
 
-          {/* Simple summary card */}
-          {activeLayer && (
-            <div className="dk-callout" style={{ borderColor: activeLayer.color }}>
-              <span style={{ fontSize: "22px" }}>{activeLayer.icon}</span>
-              <div>
-                <div style={{ fontFamily: "var(--display)", fontWeight: 600, color: activeLayer.color, fontSize: "13px", marginBottom: "4px" }}>
-                  {activeLayer.title}
-                </div>
-                <div style={{ fontFamily: "var(--body)", fontSize: "13px", color: "var(--text2)", lineHeight: 1.6 }}>
-                  {activeLayer.simple}
-                </div>
-              </div>
+          {/* Host processes */}
+          <div className="dlab-host-bar">
+            <span className="dlab-host-label">Host processes (visible to all containers without isolation):</span>
+            <div className="dlab-host-procs">
+              {["PID 1 — systemd", "PID 892 — sshd", "PID 2041 — postgres", "PID 5533 — your-bank-app"].map(p => (
+                <span key={p} className={`dlab-proc ${hasWall("pid") ? "dlab-proc-hidden" : ""}`}>{p}</span>
+              ))}
+            </div>
+            {hasWall("pid") && <div className="dlab-isolated-note">🪪 PID Namespace active — containers can only see themselves</div>}
+          </div>
+
+          {/* Docker engine */}
+          <div className="dlab-engine">
+            <span>🐳</span>
+            <span>Docker Engine</span>
+            <span className="dlab-engine-sub">dockerd → containerd → runc</span>
+          </div>
+
+          {/* Active walls */}
+          {walls.length > 0 && (
+            <div className="dlab-walls-strip">
+              {LAYERS.filter(l => hasWall(l.id)).map(l => (
+                <span key={l.id} className="dlab-wall-tag" style={{ "--wc": l.color }}>
+                  {l.icon} {l.name}
+                </span>
+              ))}
+              <span className="dlab-walls-label">isolation walls</span>
             </div>
           )}
 
-          {/* Progress indicator */}
-          {applied.length > 0 && (
-            <div className="dk-progress">
-              <div className="dk-progress-label">
-                {applied.length} of 5 layers applied
-                {applied.length === 5 && " — fully isolated! 🎉"}
+          {/* Containers */}
+          <div className="dlab-containers">
+            {APPS.map(app => (
+              <div key={app.name} className="dlab-container" style={{ "--ac": app.color }}>
+                <div className="dlab-ctr-header">
+                  <span className="dlab-ctr-icon">{app.icon}</span>
+                  <span className="dlab-ctr-name">{app.name}</span>
+                  <span className="dlab-ctr-status">running</span>
+                </div>
+                <div className="dlab-ctr-body">
+                  <div className={`dlab-stat ${focused === "pid" ? "dlab-stat-focus" : ""}`} style={{ "--fc": "#a29bfe" }}>
+                    <span className="dlab-stat-icon">🪪</span>
+                    <span className="dlab-stat-label">Process ID</span>
+                    <span className="dlab-stat-val">
+                      {hasWall("pid") ? <span className="dlab-val-good">PID 1 (isolated)</span> : <span className="dlab-val-bad">{app.pid} (exposed!)</span>}
+                    </span>
+                  </div>
+                  <div className={`dlab-stat ${focused === "mount" ? "dlab-stat-focus" : ""}`} style={{ "--fc": "#fd79a8" }}>
+                    <span className="dlab-stat-icon">📂</span>
+                    <span className="dlab-stat-label">Filesystem</span>
+                    <span className="dlab-stat-val">
+                      {hasWall("mount") ? <span className="dlab-val-good">private copy</span> : <span className="dlab-val-bad">host files visible!</span>}
+                    </span>
+                  </div>
+                  <div className={`dlab-stat ${focused === "net" ? "dlab-stat-focus" : ""}`} style={{ "--fc": "#00b894" }}>
+                    <span className="dlab-stat-icon">🌐</span>
+                    <span className="dlab-stat-label">Network</span>
+                    <span className="dlab-stat-val">
+                      {hasWall("net") ? <span className="dlab-val-good">{app.ip}</span> : <span className="dlab-val-bad">shared!</span>}
+                    </span>
+                  </div>
+                  <div className={`dlab-stat ${focused === "cgroups" ? "dlab-stat-focus" : ""}`} style={{ "--fc": "#fdcb6e" }}>
+                    <span className="dlab-stat-icon">⚖️</span>
+                    <span className="dlab-stat-label">Memory</span>
+                    <span className="dlab-stat-val">
+                      {hasWall("cgroups") ? <span className="dlab-val-good">512 MB max</span> : <span className="dlab-val-bad">unlimited!</span>}
+                    </span>
+                  </div>
+                  <div className={`dlab-stat ${focused === "seccomp" ? "dlab-stat-focus" : ""}`} style={{ "--fc": "#e17055" }}>
+                    <span className="dlab-stat-icon">🛡️</span>
+                    <span className="dlab-stat-label">Syscalls</span>
+                    <span className="dlab-stat-val">
+                      {hasWall("seccomp") ? <span className="dlab-val-good">44 blocked</span> : <span className="dlab-val-bad">all open!</span>}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="dk-progress-bar">
-                <div
-                  className="dk-progress-fill"
-                  style={{ width: `${(applied.length / 5) * 100}%` }}
-                />
+            ))}
+          </div>
+        </div>
+
+        {/* Wall buttons */}
+        <div className="dlab-controls">
+          <div className="dlab-controls-label">Click a wall to apply it — then read what it does</div>
+          <div className="dlab-buttons">
+            {LAYERS.map(layer => (
+              <button
+                key={layer.id}
+                className={`dlab-wall-btn ${hasWall(layer.id) ? "dlab-wall-on" : ""} ${focused === layer.id ? "dlab-wall-focused" : ""}`}
+                style={{ "--wc": layer.color }}
+                onClick={() => toggleWall(layer.id)}
+              >
+                <span className="dlab-btn-icon">{layer.icon}</span>
+                <span className="dlab-btn-name">{layer.name}</span>
+                <span className="dlab-btn-state">{hasWall(layer.id) ? "ON" : "OFF"}</span>
+              </button>
+            ))}
+          </div>
+
+          {focusedLayer && (
+            <div className="dlab-explain" style={{ "--ec": focusedLayer.color }}>
+              <div className="dlab-explain-q">{focusedLayer.question}</div>
+              <div className="dlab-explain-panels">
+                <div className="dlab-panel dlab-panel-bad">
+                  <span className="dlab-panel-label">❌ Without {focusedLayer.name}</span>
+                  <p>{focusedLayer.withoutProblem}</p>
+                </div>
+                <div className="dlab-panel dlab-panel-good">
+                  <span className="dlab-panel-label">✅ With {focusedLayer.name}</span>
+                  <p>{focusedLayer.withSolution}</p>
+                </div>
               </div>
+              <div className="dlab-cmd"><span>$</span> {focusedLayer.command}</div>
+            </div>
+          )}
+
+          {walls.length === 0 && !focused && (
+            <div className="dlab-hint">👆 Click any wall above to start</div>
+          )}
+          {allApplied && (
+            <div className="dlab-complete">
+              🎉 All 5 walls applied. This is exactly how every Docker container runs in production.
             </div>
           )}
         </div>
       </div>
+
     </main>
   );
 };

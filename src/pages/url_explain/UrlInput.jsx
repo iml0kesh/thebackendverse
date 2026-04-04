@@ -27,7 +27,7 @@ export const UrlInput = ({ url, setUrl, onStart }) => {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             onKeyDown={handleKey}
-            placeholder="https://www.instagram.com/iaml0kesh"
+            placeholder="https://www.google.com/search"
             spellCheck={false}
           />
         </div>
@@ -38,8 +38,8 @@ export const UrlInput = ({ url, setUrl, onStart }) => {
       <div className="example-links">
         Try:
         {[
-          "https://www.instagram.com/iaml0kesh",
-          "https://api.github.com/users/iml0kesh",
+          "https://www.instagram.com/jhondoe",
+          "https://api.github.com/users/jhondoe",
           "https://www.google.com/search?q=backend",
         ].map((ex) => (
           <button key={ex} className="example-chip" onClick={() => setUrl(ex)}>

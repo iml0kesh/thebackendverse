@@ -1,5 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap");
-@import url("https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=cabinet-grotesk@300,400,500,700,800&display=swap");
+@import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@300,400,500,700,800&display=swap");
 
 *,
 *::before,
@@ -30,9 +31,9 @@
   --accent: #ff6b35;
   --accent2: #06d6a0;
   --accent3: #118ab2;
-  --mono: "Fira Code", monospace;
-  --display: "Jost", sans-serif;
-  --body: "Jost", sans-serif;
+  --mono: "JetBrains Mono", monospace;
+  --display: "Outfit", sans-serif;
+  --body: "Cabinet Grotesk", sans-serif;
 }
 
 html {
@@ -43,7 +44,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--body);
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.8;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -178,7 +179,7 @@ main {
   color: var(--muted);
   max-width: 500px;
   margin: 0 auto 40px;
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.9;
   font-family: var(--body);
   font-weight: 400;
@@ -317,7 +318,7 @@ main {
   color: var(--muted);
   max-width: 500px;
   margin: 0 auto 40px;
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.9;
   font-family: var(--body);
   font-weight: 400;
@@ -1229,7 +1230,7 @@ main {
 }
 .home-how-title {
   font-family: var(--display);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text);
   letter-spacing: -0.2px;
@@ -1395,460 +1396,584 @@ main {
 }
 
 /* ================================ */
-/* DOCKER INTERACTIVE PAGE          */
+/* DOCKER ISOLATION LAB             */
 /* ================================ */
 
-.dk-workspace {
-  display: grid;
-  grid-template-columns: 420px 1fr;
-  gap: 24px;
-  align-items: start;
+.docker-lab {
   padding-bottom: 80px;
 }
 
-.dk-col-label {
+/* Header */
+.dlab-header {
+  text-align: center;
+  padding: 60px 0 48px;
+}
+.dlab-title {
+  font-family: var(--display);
+  font-size: clamp(32px, 5vw, 60px);
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: var(--text);
+  margin-bottom: 16px;
+  line-height: 1.1;
+}
+.dlab-subtitle {
+  font-family: var(--body);
+  font-size: 16px;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* The machine box — everything lives inside here */
+.dlab-machine {
+  background: var(--bg2);
+  border: 1.5px solid var(--border2);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.dlab-machine-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.dlab-machine-sub {
+  color: var(--accent2);
+}
+
+/* Host process bar */
+.dlab-host-bar {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dlab-host-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.dlab-host-procs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.dlab-proc {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  transition: all 0.3s;
+}
+.dlab-proc.dlab-proc-hidden {
+  opacity: 0.2;
+  text-decoration: line-through;
+  border-style: dashed;
+}
+.dlab-isolated-note {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #a29bfe;
+  letter-spacing: 0.3px;
+}
+
+/* Docker engine band */
+.dlab-engine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: color-mix(in srgb, #118ab2 10%, var(--bg3));
+  border: 1px solid color-mix(in srgb, #118ab2 25%, var(--border));
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: #118ab2;
+}
+.dlab-engine-sub {
+  margin-left: auto;
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+/* Walls strip */
+.dlab-walls-strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 14px;
+  border: 1.5px dashed var(--border2);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bg3) 50%, transparent);
+  animation: fadeUp 0.2s ease;
+}
+.dlab-wall-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  color: var(--wc);
+  border: 1px solid color-mix(in srgb, var(--wc) 35%, var(--border));
+  background: color-mix(in srgb, var(--wc) 10%, transparent);
+}
+.dlab-walls-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+/* Container grid */
+.dlab-containers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.dlab-container {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--ac);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.dlab-ctr-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.dlab-ctr-icon {
+  font-size: 16px;
+}
+.dlab-ctr-name {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+.dlab-ctr-status {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--accent2);
+  background: color-mix(in srgb, var(--accent2) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent2) 25%, transparent);
+  padding: 2px 8px;
+  border-radius: 100px;
+  letter-spacing: 0.5px;
+}
+.dlab-ctr-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Stat rows inside container */
+.dlab-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background 0.25s;
+}
+.dlab-stat.dlab-stat-focus {
+  background: color-mix(in srgb, var(--fc) 12%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--fc) 25%, transparent);
+}
+.dlab-stat-icon {
+  font-size: 12px;
+  line-height: 1;
+}
+.dlab-stat-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  flex: 1;
+}
+.dlab-stat-val {
+  font-family: var(--mono);
+  font-size: 10px;
+}
+.dlab-val-bad {
+  color: #e17055;
+}
+.dlab-val-good {
+  color: var(--accent2);
+}
+
+/* ---- CONTROLS SECTION ---- */
+.dlab-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.dlab-controls-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-align: center;
+}
+.dlab-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.dlab-wall-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: var(--bg2);
+  border: 1.5px solid var(--border2);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.18s;
+  min-width: 180px;
+}
+.dlab-wall-btn:hover {
+  border-color: var(--wc);
+  background: color-mix(in srgb, var(--wc) 6%, var(--bg2));
+}
+.dlab-wall-btn.dlab-wall-on {
+  border-color: var(--wc);
+  background: color-mix(in srgb, var(--wc) 12%, var(--bg2));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wc) 15%, transparent);
+}
+.dlab-wall-btn.dlab-wall-focused {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wc) 25%, transparent);
+}
+.dlab-btn-icon {
+  font-size: 18px;
+}
+.dlab-btn-name {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+  text-align: left;
+}
+.dlab-btn-state {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--bg3);
+  color: var(--muted);
+  border: 1px solid var(--border2);
+}
+.dlab-wall-btn.dlab-wall-on .dlab-btn-state {
+  background: var(--wc);
+  color: #000;
+  border-color: var(--wc);
+}
+
+/* Explanation panel */
+.dlab-explain {
+  background: var(--bg2);
+  border: 1.5px solid var(--border2);
+  border-left: 3px solid var(--ec);
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeUp 0.2s ease;
+}
+.dlab-explain-q {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+.dlab-explain-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.dlab-panel {
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dlab-panel-bad {
+  background: color-mix(in srgb, #e17055 8%, var(--bg3));
+  border: 1px solid color-mix(in srgb, #e17055 20%, var(--border));
+}
+.dlab-panel-good {
+  background: color-mix(in srgb, var(--accent2) 8%, var(--bg3));
+  border: 1px solid color-mix(in srgb, var(--accent2) 20%, var(--border));
+}
+.dlab-panel-label {
   font-family: var(--mono);
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 2px;
-  color: var(--muted);
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  margin-bottom: 12px;
+  color: var(--muted);
+}
+.dlab-panel p {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+  margin: 0;
+}
+.dlab-cmd {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent2);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  gap: 10px;
+}
+.dlab-cmd span:first-child {
+  color: var(--muted);
 }
 
-/* ---- LEFT: layer cards ---- */
-.dk-layers-col {
+.dlab-hint {
+  text-align: center;
+  font-family: var(--body);
+  font-size: 15px;
+  color: var(--muted);
+  padding: 16px;
+}
+.dlab-complete {
+  text-align: center;
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent2);
+  background: color-mix(in srgb, var(--accent2) 8%, var(--bg2));
+  border: 1px solid color-mix(in srgb, var(--accent2) 25%, var(--border));
+  border-radius: 12px;
+  padding: 16px 24px;
+}
+
+@media (max-width: 860px) {
+  .dlab-containers {
+    grid-template-columns: 1fr;
+  }
+  .dlab-explain-panels {
+    grid-template-columns: 1fr;
+  }
+  .dlab-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dlab-wall-btn {
+    min-width: unset;
+  }
+}
+
+/* ── Docker: section layout ── */
+.dlab-section {
+  margin-bottom: 64px;
+}
+.dlab-section-header {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+.dlab-section-num {
+  font-family: var(--display);
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--accent);
+  opacity: 0.25;
+  line-height: 1;
+  flex-shrink: 0;
+  letter-spacing: -2px;
+}
+.dlab-section-title {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+.dlab-section-sub {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 600px;
+}
+
+/* ── Concept cards ── */
+.dlab-concepts {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
-
-.dk-layer-card {
+.dlab-concept-card {
   width: 100%;
   text-align: left;
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 14px 16px;
+  padding: 16px 20px;
   cursor: pointer;
-  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
-  position: relative;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
-.dk-layer-card:hover {
-  border-color: var(--dk-color);
-  background: color-mix(in srgb, var(--dk-color) 5%, var(--bg2));
+.dlab-concept-card:hover {
+  border-color: var(--border2);
+  background: var(--bg3);
 }
-.dk-layer-card.dk-layer-selected {
-  border-color: var(--dk-color);
-  background: color-mix(in srgb, var(--dk-color) 8%, var(--bg2));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--dk-color) 20%, transparent);
+.dlab-concept-card.dlab-concept-open {
+  border-color: var(--accent);
+  background: var(--bg3);
 }
-.dk-layer-card.dk-layer-applied {
-  border-color: color-mix(in srgb, var(--dk-color) 40%, var(--border));
-}
-
-.dk-layer-top {
+.dlab-concept-top {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
-.dk-layer-icon {
-  font-size: 20px;
+.dlab-concept-icon {
+  font-size: 24px;
   line-height: 1;
   flex-shrink: 0;
 }
-.dk-layer-meta {
+.dlab-concept-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   flex: 1;
 }
-.dk-layer-title {
+.dlab-concept-term {
   font-family: var(--display);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--text);
 }
-.dk-layer-tag {
-  font-family: var(--mono);
-  font-size: 10px;
+.dlab-concept-simple {
+  font-family: var(--body);
+  font-size: 13px;
   color: var(--muted);
-  letter-spacing: 0.3px;
 }
-.dk-layer-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--border2);
-  transition: background 0.2s;
+.dlab-concept-chevron {
+  font-size: 11px;
+  color: var(--muted);
   flex-shrink: 0;
 }
-.dk-layer-dot.dk-dot-on {
-  background: var(--dk-color);
-  box-shadow: 0 0 6px var(--dk-color);
-}
-
-/* expanded body */
-.dk-layer-body {
-  margin-top: 14px;
-  padding-top: 14px;
+.dlab-concept-body {
+  margin-top: 16px;
+  padding-top: 16px;
   border-top: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-.dk-layer-what {
+.dlab-concept-explain {
   font-family: var(--body);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text2);
-  line-height: 1.75;
-}
-.dk-before-after {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  background: var(--bg3);
-  border-radius: 8px;
-  flex-wrap: wrap;
-}
-.dk-ba-item {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.dk-ba-label {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.dk-ba-val {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text2);
-}
-.dk-ba-before .dk-ba-val {
-  text-decoration: line-through;
-  color: var(--muted);
-}
-.dk-ba-arrow {
-  color: var(--muted);
-  font-size: 16px;
-}
-.dk-ba-after .dk-ba-val {
-  font-weight: 600;
-}
-.dk-code {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px 16px;
-  font-family: var(--mono);
-  font-size: 11px;
   line-height: 1.8;
-  color: var(--accent2);
-  overflow-x: auto;
-  white-space: pre;
-}
-.dk-reset {
-  margin-top: 4px;
-  padding: 8px 16px;
-  background: transparent;
-  border: 1px solid var(--border2);
-  border-radius: 100px;
-  color: var(--muted);
-  font-family: var(--mono);
-  font-size: 11px;
-  cursor: pointer;
-  transition: all 0.15s;
-  align-self: flex-start;
-}
-.dk-reset:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-/* ---- RIGHT: diagram ---- */
-.dk-diagram-col {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  position: sticky;
-  top: 80px;
-}
-.dk-diagram {
-  border-radius: 16px;
-  overflow: hidden;
-}
-.dk-host {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: 16px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.dk-host-label {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-.dk-host-procs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.dk-proc-pill {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--muted);
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 3px 10px;
-}
-.dk-proc-hidden {
-  border-color: var(--border2);
-  color: var(--text2);
-}
-.dk-engine-band {
-  background: color-mix(in srgb, #118ab2 8%, var(--bg3));
-  border: 1px solid color-mix(in srgb, #118ab2 30%, var(--border));
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: #118ab2;
-  letter-spacing: 0.3px;
-}
-
-/* isolation wall */
-.dk-wall {
-  border: 1px dashed var(--border2);
-  border-radius: 10px;
-  padding: 10px 14px;
-  background: color-mix(in srgb, var(--bg3) 60%, transparent);
-  animation: fadeUp 0.25s ease;
-}
-.dk-wall-layers {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 6px;
-}
-.dk-wall-chip {
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 3px 10px;
-  border-radius: 100px;
-  border: 1px solid color-mix(in srgb, var(--dk-color) 40%, var(--border));
-  color: var(--dk-color);
-  background: color-mix(in srgb, var(--dk-color) 8%, transparent);
-  transition: all 0.2s;
-}
-.dk-wall-chip.dk-wall-chip-active {
-  background: color-mix(in srgb, var(--dk-color) 18%, transparent);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--dk-color) 30%, transparent);
-}
-.dk-wall-label {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-/* container boxes grid */
-.dk-containers-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-.dk-container-box {
-  background: var(--bg3);
-  border: 1px solid var(--dk-color, var(--border2));
-  border-radius: 10px;
-  padding: 12px;
-  transition: border-color 0.25s, box-shadow 0.25s;
-  box-shadow: 0 0 0 0 transparent;
-}
-.dk-container-box:has(.dk-row-lit) {
-  box-shadow: 0 0 12px color-mix(in srgb, var(--dk-color) 20%, transparent);
-}
-.dk-cbox-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
-}
-.dk-cbox-icon { font-size: 14px; }
-.dk-cbox-name {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text);
-}
-.dk-cbox-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.dk-cbox-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--muted);
-  padding: 3px 6px;
-  border-radius: 5px;
-  transition: background 0.2s, color 0.2s;
-}
-.dk-cbox-row.dk-row-lit {
-  background: color-mix(in srgb, var(--dk-color) 12%, transparent);
-  color: var(--dk-color);
-  font-weight: 600;
-}
-.dk-diagram-hint {
-  text-align: center;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-  padding: 8px;
-  letter-spacing: 0.3px;
-}
-
-/* callout strip */
-.dk-callout {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-left-width: 3px;
-  border-radius: 10px;
-  animation: fadeUp 0.2s ease;
-}
-.dk-callout-icon { font-size: 20px; }
-.dk-callout-text {
-  font-family: var(--body);
-  font-size: 13px;
-  color: var(--text2);
-  line-height: 1.5;
-}
-
-/* responsive */
-@media (max-width: 960px) {
-  .dk-workspace {
-    grid-template-columns: 1fr;
-  }
-  .dk-diagram-col {
-    position: static;
-  }
-  .dk-containers-row {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-@media (max-width: 560px) {
-  .dk-containers-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Docker extra — analogy / how / realworld blocks */
-.dk-analogy,
-.dk-how,
-.dk-realworld {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.dk-analogy {
-  background: color-mix(in srgb, var(--accent2) 6%, var(--bg3));
-  border: 1px solid color-mix(in srgb, var(--accent2) 20%, var(--border));
-  border-radius: 8px;
-  padding: 12px 14px;
-}
-.dk-how {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px 14px;
-}
-.dk-realworld {
-  background: color-mix(in srgb, var(--accent) 5%, var(--bg3));
-  border: 1px solid color-mix(in srgb, var(--accent) 15%, var(--border));
-  border-radius: 8px;
-  padding: 12px 14px;
-}
-.dk-analogy p,
-.dk-how p,
-.dk-realworld p {
-  font-family: var(--body);
-  font-size: 13px;
-  color: var(--text2);
-  line-height: 1.75;
   margin: 0;
 }
-.dk-analogy-label,
-.dk-section-label {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: var(--muted);
-  text-transform: uppercase;
-}
-
-/* details/summary for code */
-.dk-code-details {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.dk-code-details summary {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-  padding: 10px 14px;
-  cursor: pointer;
-  user-select: none;
-  list-style: none;
-  transition: color 0.15s;
-}
-.dk-code-details summary:hover { color: var(--text2); }
-.dk-code-details[open] summary { border-bottom: 1px solid var(--border); }
-.dk-code-details .dk-code { border-radius: 0; border: none; margin: 0; }
-
-/* progress bar */
-.dk-progress {
+.dlab-concept-analogy {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 10px;
+  background: color-mix(in srgb, var(--accent2) 6%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--accent2) 18%, var(--border));
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
 }
-.dk-progress-label {
+.dlab-analogy-label {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent2);
+  white-space: nowrap;
+  padding-top: 2px;
+}
+
+/* ── Isolation intro cards ── */
+.dlab-isolation-intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.dlab-iso-card {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 20px;
+}
+.dlab-iso-icon {
+  font-size: 28px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.dlab-iso-title {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.dlab-iso-text {
+  font-family: var(--body);
+  font-size: 13px;
   color: var(--muted);
-  letter-spacing: 0.3px;
+  line-height: 1.75;
 }
-.dk-progress-bar {
-  height: 4px;
-  background: var(--border2);
-  border-radius: 2px;
-  overflow: hidden;
-}
-.dk-progress-fill {
-  height: 100%;
-  background: var(--accent2);
-  border-radius: 2px;
-  transition: width 0.4s ease;
+
+@media (max-width: 700px) {
+  .dlab-isolation-intro {
+    grid-template-columns: 1fr;
+  }
+  .dlab-section-num {
+    font-size: 36px;
+  }
 }
